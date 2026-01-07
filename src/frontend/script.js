@@ -25,7 +25,7 @@ socket.on('new_detection', (data) => {
     // Mise a jour des stats
     statsLive.style.display = "grid";
     countVal.innerText = data.num_detections;
-    timeVal.innerText = data.timestamp;
+    timeVal.innerText = data.datetime;
     
     // Affichage des détections par classe
     if (data.detection_count && Object.keys(data.detection_count).length > 0) {
@@ -44,5 +44,5 @@ socket.on('new_detection', (data) => {
     }
     
     statusBar.style.background = "#fff3e0";
-    statusBar.innerText = "Derniere detection recue a " + data.timestamp;
+    statusBar.innerText = "Derniere detection recue a " + data.datetime;
 });

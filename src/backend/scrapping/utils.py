@@ -125,21 +125,41 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
             ]
             
             fullscreen_clicked = False
+            
+            # Tentative 1 : Chercher et cliquer sur le bouton fullscreen
+            print("Tentative 1 : Recherche du bouton fullscreen...")
             for selector in fullscreen_selectors:
                 try:
                     element = WebDriverWait(driver, 2).until(
                         EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
                     )
                     element.click()
-                    print(f"Plein écran activé via: {selector}")
+                    print(f"Plein écran activé via: {selector} (Tentative 1)")
                     fullscreen_clicked = True
                     break
                 except:
                     continue
             
-            # Si pas de bouton fullscreen, utiliser JavaScript
+            # Tentative 2 : Si échouée, attendre et réessayer
             if not fullscreen_clicked:
-                print("Bouton fullscreen non trouvé, utilisation de JavaScript...")
+                print("Tentative 1 échouée. Attente 2 secondes...")
+                time.sleep(2)
+                print("Tentative 2 : Nouvelle recherche du bouton fullscreen...")
+                for selector in fullscreen_selectors:
+                    try:
+                        element = WebDriverWait(driver, 2).until(
+                            EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
+                        )
+                        element.click()
+                        print(f"Plein écran activé via: {selector} (Tentative 2)")
+                        fullscreen_clicked = True
+                        break
+                    except:
+                        continue
+            
+            # Si pas de bouton fullscreen après 2 tentatives, utiliser JavaScript
+            if not fullscreen_clicked:
+                print("Tentative 2 échouée. Utilisation de JavaScript en fallback...")
                 driver.execute_script("""
                     var elem = document.querySelector('video') || document.documentElement;
                     if (elem.requestFullscreen) {
@@ -152,7 +172,7 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
                         elem.msRequestFullscreen();
                     }
                 """)
-                print("Plein écran activé via JavaScript")
+                print("Plein écran activé via JavaScript (fallback)")
                 
         except Exception as e:
             print(f"Impossible de passer en plein écran: {e}")
