@@ -18,9 +18,9 @@ sys.path.append(str(Path(__file__).resolve().parents[3]))
 from src.config.paths import RAW_DATA_DIR, PROCESSED_DATA_DIR
 
 # Configuration
-WEBCAM_URL = "https://www.skylinewebcams.com/fr/webcam/norge/western-norway/bergen/bergen.html"
+WEBCAM_URL = "https://www.skylinewebcams.com/fr/webcam/united-kingdom/wales/cardiff/cardiff.html"
 SAVE_DIR = Path(RAW_DATA_DIR) / "webcam_bergen_snapshots"
-METADATA_DIR = Path(PROCESSED_DATA_DIR) / "web_cam_bergen_metadata"
+METADATA_DIR = Path(PROCESSED_DATA_DIR) / "web_cam_cardiff_metadata"
 METADATA_FILE = METADATA_DIR / "captures_metadata.json"
 INTERVAL_MINUTES = 1  # Modifier selon vos besoins
 WAIT_TIME = 15  # Secondes d'attente pour le chargement de la vidéo
@@ -33,7 +33,7 @@ METADATA_DIR.mkdir(parents=True, exist_ok=True)
 def main():
     """Fonction principale"""
     print("=" * 70)
-    print("Script de capture Webcam Bergen - Norvège")
+    print("Script de capture Webcam Cardiff - Royaume-Uni")
     print("=" * 70)
     print(f"URL: {WEBCAM_URL}")
     print(f"Dossier de sauvegarde: {SAVE_DIR.absolute()}")

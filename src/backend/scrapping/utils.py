@@ -75,7 +75,7 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
                     EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
                 )
                 element.click()
-                print(f"✓ Cookies acceptés via: {selector}")
+                print(f"Cookies acceptés via: {selector}")
                 time.sleep(1)
                 break
             except:
@@ -99,7 +99,7 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
                     EC.presence_of_element_located((By.CSS_SELECTOR, selector))
                 )
                 element.click()
-                print(f"✓ Clic sur la vidéo réussi: {selector}")
+                print(f"Clic sur la vidéo réussi: {selector}")
                 video_clicked = True
                 time.sleep(2)
                 break
@@ -131,7 +131,7 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
                         EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
                     )
                     element.click()
-                    print(f"✓ Plein écran activé via: {selector}")
+                    print(f"Plein écran activé via: {selector}")
                     fullscreen_clicked = True
                     break
                 except:
@@ -152,7 +152,7 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
                         elem.msRequestFullscreen();
                     }
                 """)
-                print("✓ Plein écran activé via JavaScript")
+                print("Plein écran activé via JavaScript")
                 
         except Exception as e:
             print(f"Impossible de passer en plein écran: {e}")
@@ -165,7 +165,7 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
         driver.save_screenshot(str(filename))
         
         file_size = filename.stat().st_size / 1024
-        print(f"✓ Snapshot sauvegardé: {filename.name} ({file_size:.1f} KB)")
+        print(f"Snapshot sauvegardé: {filename.name} ({file_size:.1f} KB)")
         
         # ÉTAPE 5 : Sauvegarder les métadonnées en JSON
         metadata = load_metadata(metadata_file)
@@ -175,12 +175,12 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
             "file_size_kb": round(file_size, 2)
         })
         save_metadata(metadata_file, metadata)
-        print(f"✓ Métadonnées sauvegardées dans {metadata_file.name}")
+        print(f"Métadonnées sauvegardées dans {metadata_file.name}")
         
         return True
         
     except Exception as e:
-        print(f"✗ Erreur lors de la capture: {e}")
+        print(f"Erreur lors de la capture: {e}")
         return False
 
 def run_scheduled(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):

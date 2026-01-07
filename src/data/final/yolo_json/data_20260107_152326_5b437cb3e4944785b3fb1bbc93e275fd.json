@@ -1,0 +1,27 @@
+{
+    "image_id": "5b437cb3e4944785b3fb1bbc93e275fd",
+    "timestamp": "15:23:26",
+    "num_detections": 4,
+    "detection_count": {
+        "car": 4
+    },
+    "detections": [
+        {
+            "class": "car",
+            "confidence": 0.67
+        },
+        {
+            "class": "car",
+            "confidence": 0.51
+        },
+        {
+            "class": "car",
+            "confidence": 0.46
+        },
+        {
+            "class": "car",
+            "confidence": 0.43
+        }
+    ],
+    "image_url": "/image/det_20260107_152326_5b437cb3e4944785b3fb1bbc93e275fd.png"
+}

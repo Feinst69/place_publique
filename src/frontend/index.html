@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>YOLO Live Monitor</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>Flux de Detection Live</h1>
+        <p>Surveillance automatique du dossier Bergen</p>
+    </div>
+
+    <div class="main-container">
+        <div class="result-box">
+            <div id="status-bar" style="background: #e8f5e9; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+                Statut : En attente de nouveaux fichiers...
+            </div>
+            
+            <div id="stats-live" class="stats-grid" style="display: none;">
+                <div class="stat-card">
+                    <div id="count-val" class="value">0</div>
+                    <div class="label">Objets detectes</div>
+                </div>
+                <div class="stat-card">
+                    <div id="time-val" class="value">--:--</div>
+                    <div class="label">Derniere analyse</div>
+                </div>
+            </div>
+
+            <div id="detections-details" style="display: none; background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <h3 style="margin-top: 0;">Détails par classe :</h3>
+                <div id="detection-list"></div>
+            </div>
+
+            <div class="image-container">
+                <img id="liveImage" style="display: none; max-width: 100%;">
+                <div id="placeholder">Aucune image traitee pour le moment</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

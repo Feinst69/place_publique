@@ -1,0 +1,24 @@
+{
+    "image_id": "86d9dd4cdfef480fa87e996b43b03cca",
+    "timestamp": "15:32:57",
+    "num_detections": 3,
+    "detection_count": {
+        "car": 1,
+        "person": 2
+    },
+    "detections": [
+        {
+            "class": "car",
+            "confidence": 0.63
+        },
+        {
+            "class": "person",
+            "confidence": 0.33
+        },
+        {
+            "class": "person",
+            "confidence": 0.32
+        }
+    ],
+    "image_url": "/image/det_20260107_153257_86d9dd4cdfef480fa87e996b43b03cca.png"
+}

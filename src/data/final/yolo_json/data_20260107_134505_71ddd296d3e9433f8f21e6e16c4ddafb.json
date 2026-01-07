@@ -1,0 +1,16 @@
+{
+    "image_id": "71ddd296d3e9433f8f21e6e16c4ddafb",
+    "timestamp": "13:45:05",
+    "num_detections": 2,
+    "detections": [
+        {
+            "class": "boat",
+            "confidence": 0.69
+        },
+        {
+            "class": "kite",
+            "confidence": 0.27
+        }
+    ],
+    "image_url": "/image/det_20260107_134505_71ddd296d3e9433f8f21e6e16c4ddafb.png"
+}
