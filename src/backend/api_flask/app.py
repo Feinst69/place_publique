@@ -60,9 +60,9 @@ if camera_config:
                 "latest_timestamp": None
             }
             os.makedirs(WEBCAM_STORAGE[camera_name]['input_dir'], exist_ok=True)
-    print(f"✅ WEBCAM_STORAGE initialisé avec {len(WEBCAM_STORAGE)} caméras: {list(WEBCAM_STORAGE.keys())}")
+    print(f" WEBCAM_STORAGE initialisé avec {len(WEBCAM_STORAGE)} caméras: {list(WEBCAM_STORAGE.keys())}")
 else:
-    print("❌ Erreur: configuration des caméras non chargée")
+    print(" Erreur: configuration des caméras non chargée")
 
 app = Flask(__name__, template_folder=FRONTEND_DIR, static_folder=FRONTEND_DIR, static_url_path='')
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -151,9 +151,9 @@ def process_image(file_path):
                 image_url=data_payload['image_url'],
                 detections=class_list
             )
-            print(f"✓ Données insérées dans les deux DB")
+            print(f"Données insérées dans les deux DB")
         else:
-            print(f"✗ Erreur lors de l'insertion dans la DB")
+            print(f"Erreur lors de l'insertion dans la DB")
 
         # 5. Envoi au frontend
         socketio.emit('new_detection', data_payload)
@@ -345,7 +345,7 @@ def upload_webcam_image():
             'num_detections': len(detections)
         })
         
-        print(f"✅ {webcam_name}: {len(detections)} détections - {detection_count}")
+        print(f"{webcam_name}: {len(detections)} détections - {detection_count}")
         
         return jsonify({
             "status": "success",

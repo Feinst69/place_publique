@@ -13,7 +13,7 @@ REM Activer l'environnement virtuel
 call venv_yolo\Scripts\activate.bat
 
 REM Vérifier les dépendances
-echo Vérification des dépendances...
+echo Verification des dependances...
 python -c "import requests" 2>nul
 if errorlevel 1 (
     echo Installation de requests...
@@ -21,7 +21,7 @@ if errorlevel 1 (
 )
 
 REM Créer les répertoires nécessaires
-echo Création des répertoires...
+echo Creation des repertoires...
 if not exist "data\raw\webcam_cardiff_snapshots" mkdir data\raw\webcam_cardiff_snapshots
 if not exist "data\raw\webcam_trevi_snapshots" mkdir data\raw\webcam_trevi_snapshots
 if not exist "data\processed\web_cam_cardiff_metadata" mkdir data\processed\web_cam_cardiff_metadata
@@ -31,27 +31,27 @@ if not exist "data\final\yolo_json" mkdir data\final\yolo_json
 
 echo.
 echo ========================================
-echo Système de Webcams et Détection YOLO
+echo Systeme de Webcams et Detection YOLO
 echo ========================================
 echo.
 echo Options:
-echo 1 - Démarrer Flask uniquement
-echo 2 - Démarrer le scraping uniquement
-echo 3 - Démarrer les deux (dans deux terminals)
+echo 1 - Demarrer Flask uniquement
+echo 2 - Demarrer le scraping uniquement
+echo 3 - Demarrer les deux (dans deux terminals)
 echo.
 
 set /p choice="Choisissez une option (1-3): "
 
 if "%choice%"=="1" (
-    echo Démarrage du serveur Flask...
+    echo Demarrage du serveur Flask...
     cd src\backend\api_flask
     python app.py
 ) else if "%choice%"=="2" (
-    echo Démarrage du scraping webcams...
+    echo Demarrage du scraping webcams...
     cd src\backend\scrapping
     python scrapping_skylinewebcams.py
 ) else if "%choice%"=="3" (
-    echo Démarrage des deux services...
+    echo Demarrage des deux services...
     echo.
     echo IMPORTANT: Ce script va ouvrir deux nouveaux terminals
     echo Vous pouvez les fermer individuellement pour arrêter un service
@@ -67,8 +67,8 @@ if "%choice%"=="1" (
     start "Webcam Scraping" cmd /k "cd /d %cd% && call venv_yolo\Scripts\activate.bat && cd src\backend\scrapping && python scrapping_skylinewebcams.py"
     
     echo.
-    echo Services démarrés!
-    echo Accédez à http://localhost:5000 dans votre navigateur
+    echo Services demarres!
+    echo Accedez à http://localhost:5000 dans votre navigateur
     echo.
     pause
 ) else (
