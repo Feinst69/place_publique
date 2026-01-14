@@ -10,6 +10,8 @@ from pathlib import Path
 import time
 import schedule
 import sys
+import requests
+import json
 from utils import *
 
 # Ajouter le dossier racine au PYTHONPATH
@@ -17,42 +19,135 @@ sys.path.append(str(Path(__file__).resolve().parents[3]))
 
 from src.config.paths import RAW_DATA_DIR, PROCESSED_DATA_DIR
 
-# Configuration
-WEBCAM_URL = "https://www.skylinewebcams.com/fr/webcam/united-kingdom/wales/cardiff/cardiff.html"
-SAVE_DIR = Path(RAW_DATA_DIR) / "webcam_bergen_snapshots"
-METADATA_DIR = Path(PROCESSED_DATA_DIR) / "web_cam_cardiff_metadata"
-METADATA_FILE = METADATA_DIR / "captures_metadata.json"
-INTERVAL_MINUTES = 1  # Modifier selon vos besoins
-WAIT_TIME = 15  # Secondes d'attente pour le chargement de la vidéo
+# Charger la configuration des caméras depuis le fichier JSON
+CONFIG_FILE = Path(__file__).resolve().parents[2] / "config" / "cameras.json"
+
+def load_cameras_config():
+    """Charge la configuration des caméras depuis le fichier JSON"""
+    try:
+        with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+        return config
+    except Exception as e:
+        print(f"Erreur lors du chargement du fichier config: {e}")
+        return None
+
+# Charger la configuration
+config = load_cameras_config()
+if not config:
+    print("Impossible de charger la configuration des caméras!")
+    print(f"Fichier attendu: {CONFIG_FILE}")
+    sys.exit(1)
+
+# Valider que la config a au moins une caméra
+if 'cameras' not in config or not config['cameras']:
+    print("Erreur: Aucune caméra configurée dans le fichier!")
+    sys.exit(1)
+
+# Préparer les caméras actives
+WEBCAMS = {}
+for cam_config in config.get('cameras', []):
+    if cam_config.get('enabled', True):
+        camera_name = cam_config['name']
+        WEBCAMS[camera_name] = {
+            "url": cam_config['url'],
+            "display_name": cam_config.get('display_name', camera_name),
+            "save_dir": Path(RAW_DATA_DIR) / f"webcam_{camera_name}_snapshots",
+            "metadata_dir": Path(PROCESSED_DATA_DIR) / f"web_cam_{camera_name}_metadata",
+        }
+
+INTERVAL_MINUTES = config.get('settings', {}).get('interval_minutes', 1)
+WAIT_TIME = config.get('settings', {}).get('wait_time', 15)
+API_URL = config.get('settings', {}).get('api_url', 'http://localhost:5000/api/webcam')
 
 # Créer les dossiers de sauvegarde
-SAVE_DIR.mkdir(parents=True, exist_ok=True)
-METADATA_DIR.mkdir(parents=True, exist_ok=True)
+for webcam_name, webcam_config in WEBCAMS.items():
+    webcam_config["save_dir"].mkdir(parents=True, exist_ok=True)
+    webcam_config["metadata_dir"].mkdir(parents=True, exist_ok=True)
+    webcam_config["metadata_file"] = webcam_config["metadata_dir"] / "captures_metadata.json"
+
+
+def send_to_api(webcam_name, image_path, timestamp):
+    """Envoie l'image et les métadonnées à l'API Flask"""
+    try:
+        with open(image_path, 'rb') as f:
+            files = {'file': f}
+            data = {
+                'webcam_name': webcam_name,
+                'timestamp': timestamp,
+            }
+            response = requests.post(API_URL, files=files, data=data, timeout=10)
+            if response.status_code == 200:
+                print(f"✓ Image envoyée à l'API Flask: {response.json()['message']}")
+                return True
+            else:
+                print(f"✗ Erreur API: {response.status_code} - {response.text}")
+                return False
+    except Exception as e:
+        print(f"✗ Erreur lors de l'envoi à l'API: {e}")
+        return False
+
+
+def capture_and_send(driver, webcam_name, config):
+    """Capture une webcam et envoie l'image à l'API"""
+    timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+    success = capture_webcam(
+        driver,
+        webcam_name,
+        config["save_dir"],
+        config["url"],
+        WAIT_TIME,
+        config["metadata_file"]
+    )
+    
+    # Si la capture a réussi, envoyer à l'API
+    if success:
+        image_path = config["save_dir"] / f"{webcam_name}_{timestamp_str}.png"
+        if image_path.exists():
+            send_to_api(webcam_name, str(image_path), timestamp_str)
+    
+    return success
 
 
 def main():
     """Fonction principale"""
     print("=" * 70)
-    print("Script de capture Webcam Cardiff - Royaume-Uni")
+    print("Script de capture Webcam - Cardiff & Trevi")
     print("=" * 70)
-    print(f"URL: {WEBCAM_URL}")
-    print(f"Dossier de sauvegarde: {SAVE_DIR.absolute()}")
-    print(f"Dossier métadonnées: {METADATA_DIR.absolute()}")
-    print(f"Intervalle: {INTERVAL_MINUTES} minutes")
+    
+    # Afficher la configuration
+    for webcam_name, config in WEBCAMS.items():
+        print(f"\n{webcam_name.upper()}:")
+        print(f"  URL: {config['url']}")
+        print(f"  Dossier: {config['save_dir'].absolute()}")
+    
+    print(f"\nIntervalle: {INTERVAL_MINUTES} minutes")
     print(f"Temps d'attente vidéo: {WAIT_TIME} secondes")
     print("=" * 70)
     
-    # Initialiser le navigateur
-    print("\n Initialisation du navigateur Chrome...")
-    driver = setup_driver()
+    # Initialiser les navigateurs dynamiquement
+    print("\nInitialisation des navigateurs Chrome...")
+    drivers = {}
+    for webcam_name in WEBCAMS.keys():
+        print(f"Initialisation du navigateur pour {webcam_name}...")
+        drivers[webcam_name] = setup_driver()
     
     try:
         # Capture immédiate au lancement
-        print("\n Capture initiale...")
-        capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, METADATA_FILE)
+        print("\nCapture initiale...")
+        for webcam_name, config in WEBCAMS.items():
+            print(f"\n[{webcam_name.upper()}] Capture en cours...")
+            capture_and_send(drivers[webcam_name], webcam_name, config)
         
         # Planification des captures suivantes
-        schedule.every(INTERVAL_MINUTES).minutes.do(lambda: run_scheduled(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, METADATA_FILE))
+        for webcam_name, config in WEBCAMS.items():
+            schedule.every(INTERVAL_MINUTES).minutes.do(
+                lambda wname=webcam_name, cfg=config: capture_and_send(
+                    drivers[wname],
+                    wname,
+                    cfg
+                )
+            )
         
         print(f"\n Captures programmées toutes les {INTERVAL_MINUTES} minutes")
         print("Appuyez sur Ctrl+C pour arrêter\n")
@@ -65,8 +160,13 @@ def main():
     except KeyboardInterrupt:
         print("\n\n Arrêt du script demandé par l'utilisateur")
     finally:
-        driver.quit()
-        print(f" Images sauvegardées dans: {SAVE_DIR.absolute()}")
+        for driver in drivers.values():
+            driver.quit()
+        
+        print("\n" + "=" * 70)
+        for webcam_name, config in WEBCAMS.items():
+            print(f"{webcam_name.upper()}: Images sauvegardées dans {config['save_dir'].absolute()}")
+        print("=" * 70)
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cameras Configuration Schema",
+  "description": "Configuration des caméras SkylineWebcams pour le système de surveillance",
+  "type": "object",
+  "required": ["cameras", "settings"],
+  "properties": {
+    "cameras": {
+      "type": "array",
+      "description": "Liste des caméras à capturer",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "display_name", "url"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Identifiant unique de la caméra (sans espaces ni caractères spéciaux)",
+            "pattern": "^[a-z0-9_]+$",
+            "examples": ["cardiff", "paris", "tokyo"]
+          },
+          "display_name": {
+            "type": "string",
+            "description": "Nom affiché sur le site web",
+            "examples": ["Cardiff - Pays de Galles", "Paris - Tour Eiffel"]
+          },
+          "url": {
+            "type": "string",
+            "description": "URL SkylineWebcams complète",
+            "format": "uri",
+            "pattern": "^https://www\\.skylinewebcams\\.com/.*$",
+            "examples": ["https://www.skylinewebcams.com/fr/webcam/united-kingdom/wales/cardiff/cardiff.html"]
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Activer ou désactiver cette caméra",
+            "default": true
+          }
+        }
+      }
+    },
+    "settings": {
+      "type": "object",
+      "description": "Paramètres globaux du scraping",
+      "required": ["interval_minutes", "wait_time", "api_url"],
+      "properties": {
+        "interval_minutes": {
+          "type": "number",
+          "description": "Intervalle entre les captures (en minutes)",
+          "minimum": 0.25,
+          "examples": [1, 2, 5]
+        },
+        "wait_time": {
+          "type": "number",
+          "description": "Temps d'attente pour le chargement de la vidéo (en secondes)",
+          "minimum": 5,
+          "maximum": 60,
+          "examples": [15, 20, 30]
+        },
+        "api_url": {
+          "type": "string",
+          "description": "URL de l'API Flask pour l'upload des images",
+          "format": "uri",
+          "examples": ["http://localhost:5000/api/webcam"]
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "cameras": [
+        {
+          "name": "cardiff",
+          "display_name": "Cardiff - Pays de Galles",
+          "url": "https://www.skylinewebcams.com/fr/webcam/united-kingdom/wales/cardiff/cardiff.html",
+          "enabled": true
+        },
+        {
+          "name": "paris",
+          "display_name": "Paris - Tour Eiffel",
+          "url": "https://www.skylinewebcams.com/fr/webcam/france/ile-de-france/paris/eiffel-tower.html",
+          "enabled": true
+        }
+      ],
+      "settings": {
+        "interval_minutes": 1,
+        "wait_time": 15,
+        "api_url": "http://localhost:5000/api/webcam"
+      }
+    }
+  ]
+}

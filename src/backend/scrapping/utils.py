@@ -39,12 +39,12 @@ def save_metadata(metadata_file, data):
     with open(metadata_file, 'w', encoding='utf-8') as f:
         json.dump(data, indent=2, ensure_ascii=False, fp=f)
 
-def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
+def capture_webcam(driver, webcam_name, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
     """Capture une frame de la webcam"""
     try:
         timestamp = datetime.now()
         timestamp_str = timestamp.strftime("%Y%m%d_%H%M%S")
-        filename = SAVE_DIR / f"bergen_{timestamp_str}.png"
+        filename = SAVE_DIR / f"{webcam_name}_{timestamp_str}.png"
         
         print(f"Chargement de la webcam...")
         driver.get(WEBCAM_URL)
@@ -203,7 +203,7 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
         print(f"Erreur lors de la capture: {e}")
         return False
 
-def run_scheduled(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
+def run_scheduled(driver, webcam_name, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
     """Exécute la capture selon le planning"""
-    print(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Démarrage de la capture...")
-    capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file)
+    print(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Démarrage de la capture {webcam_name}...")
+    capture_webcam(driver, webcam_name, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file)

@@ -38,11 +38,12 @@ class DetectionClassDatabase:
         cursor = conn.cursor()
         
         # Table : Détails des objets détectés par classe (une ligne par classe/image)
-        # Colonnes : ID | IMAGE_URL | CLASS | CONFIDENCE | DETECTION_COUNT
+        # Colonnes : ID | IMAGE_URL | WEBCAM_NAME | CLASS | CONFIDENCE | DETECTION_COUNT
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS detection_class (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 image_url TEXT NOT NULL,
+                webcam_name TEXT,
                 class TEXT NOT NULL,
                 confidence REAL NOT NULL,
                 detection_count INTEGER NOT NULL,
@@ -53,11 +54,12 @@ class DetectionClassDatabase:
         # Index pour améliorer les performances
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_class_image_url ON detection_class(image_url)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_class_name ON detection_class(class)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_webcam_name ON detection_class(webcam_name)")
         
         conn.commit()
         self.close()
     
-    def insert_detection_class(self, image_url: str, class_name: str, confidence: float, detection_count: int) -> bool:
+    def insert_detection_class(self, image_url: str, class_name: str, confidence: float, detection_count: int, webcam_name: str = None) -> bool:
         """
         Insère un détail de détection par classe dans la base de données.
         
@@ -66,6 +68,7 @@ class DetectionClassDatabase:
             class_name: Classe de l'objet détecté
             confidence: Confiance de la détection
             detection_count: Nombre d'objets détectés de cette classe
+            webcam_name: Nom de la webcam (optionnel)
         
         Returns:
             True si l'insertion a réussi, False sinon
@@ -79,9 +82,9 @@ class DetectionClassDatabase:
             
             # Insertion dans la table detection_class avec juste le nom du fichier
             cursor.execute("""
-                INSERT INTO detection_class (image_url, class, confidence, detection_count)
-                VALUES (?, ?, ?, ?)
-            """, (image_filename, class_name, confidence, detection_count))
+                INSERT INTO detection_class (image_url, webcam_name, class, confidence, detection_count)
+                VALUES (?, ?, ?, ?, ?)
+            """, (image_filename, webcam_name, class_name, confidence, detection_count))
             
             conn.commit()
             return True
@@ -248,6 +251,166 @@ class DetectionClassDatabase:
                 }
             
             return stats
+            
+        finally:
+            self.close()
+    
+    def get_statistics_by_webcam(self, webcam_name: str = None) -> Dict:
+        """
+        Récupère les statistiques détaillées par webcam.
+        
+        Args:
+            webcam_name: Nom de la webcam (optionnel, si None retourne toutes les webcams)
+        
+        Returns:
+            Dictionnaire avec les statistiques par webcam et par image
+        """
+        conn = self.connect()
+        cursor = conn.cursor()
+        
+        try:
+            if webcam_name:
+                cursor.execute("""
+                    SELECT image_url, class, confidence, detection_count, created_at
+                    FROM detection_class
+                    WHERE webcam_name = ?
+                    ORDER BY created_at DESC, image_url
+                """, (webcam_name,))
+            else:
+                cursor.execute("""
+                    SELECT webcam_name, image_url, class, confidence, detection_count, created_at
+                    FROM detection_class
+                    WHERE webcam_name IS NOT NULL
+                    ORDER BY webcam_name, created_at DESC, image_url
+                """)
+            
+            results = {}
+            for row in cursor.fetchall():
+                if webcam_name:
+                    cam = webcam_name
+                else:
+                    cam = row['webcam_name']
+                
+                if cam not in results:
+                    results[cam] = {}
+                
+                img_url = row['image_url']
+                if img_url not in results[cam]:
+                    results[cam][img_url] = {
+                        'detections': {},
+                        'timestamp': row['created_at']
+                    }
+                
+                results[cam][img_url]['detections'][row['class']] = {
+                    'count': row['detection_count'],
+                    'confidence': row['confidence']
+                }
+            
+            return results
+            
+        finally:
+            self.close()
+    
+    def get_webcam_summary(self) -> List[Dict]:
+        """
+        Récupère un résumé des statistiques pour chaque webcam.
+        
+        Returns:
+            Liste de dictionnaires avec les stats par webcam
+        """
+        conn = self.connect()
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute("""
+                SELECT 
+                    webcam_name,
+                    COUNT(DISTINCT image_url) as total_images,
+                    COUNT(*) as total_detections,
+                    SUM(detection_count) as total_objects
+                FROM detection_class
+                WHERE webcam_name IS NOT NULL
+                GROUP BY webcam_name
+                ORDER BY total_objects DESC
+            """)
+            
+            summary = []
+            for row in cursor.fetchall():
+                summary.append({
+                    'webcam_name': row['webcam_name'],
+                    'total_images': row['total_images'],
+                    'total_detections': row['total_detections'],
+                    'total_objects': row['total_objects']
+                })
+            
+            return summary
+            
+        finally:
+            self.close()
+    
+    def get_detection_timeline(self, webcam_name: str = None) -> Dict:
+        """
+        Récupère l'évolution temporelle des détections par classe.
+        
+        Args:
+            webcam_name: Nom de la webcam (optionnel, filtre les résultats)
+        
+        Returns:
+            Dictionnaire avec les données temporelles par classe
+        """
+        conn = self.connect()
+        cursor = conn.cursor()
+        
+        try:
+            if webcam_name:
+                cursor.execute("""
+                    SELECT 
+                        image_url,
+                        class,
+                        detection_count,
+                        created_at
+                    FROM detection_class
+                    WHERE webcam_name = ?
+                    ORDER BY created_at ASC
+                """, (webcam_name,))
+            else:
+                cursor.execute("""
+                    SELECT 
+                        image_url,
+                        class,
+                        detection_count,
+                        created_at
+                    FROM detection_class
+                    ORDER BY created_at ASC
+                """)
+            
+            # Organiser les données par classe
+            timeline_data = {}
+            image_index = {}
+            image_counter = 0
+            
+            for row in cursor.fetchall():
+                img_url = row['image_url']
+                class_name = row['class']
+                count = row['detection_count']
+                
+                # Attribuer un index numérique à chaque image
+                if img_url not in image_index:
+                    image_index[img_url] = image_counter
+                    image_counter += 1
+                
+                # Initialiser la classe si nécessaire
+                if class_name not in timeline_data:
+                    timeline_data[class_name] = {
+                        'labels': [],
+                        'data': []
+                    }
+                
+                # Ajouter les données
+                timeline_data[class_name]['labels'].append(image_index[img_url])
+                timeline_data[class_name]['data'].append(count)
+            
+            return timeline_data
             
         finally:
             self.close()

@@ -84,9 +84,9 @@ with open(json_path, "w", encoding="utf-8") as f:
 
 
 print("✓ Inférence terminée")
-print(f"🖼️ Image annotée : {image_out_path}")
-print(f"📄 JSON : {json_path}")
+print(f" Image annotée : {image_out_path}")
+print(f" JSON : {json_path}")
 
-print("\n📊 Comptage par classe :")
+print("\n Comptage par classe :")
 for cls, count in class_counts.items():
     print(f"  - {cls}: {count}")

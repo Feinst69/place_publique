@@ -1,0 +1,27 @@
+{
+  "cameras": [
+    {
+      "name": "cardiff",
+      "display_name": "Cardiff - Pays de Galles",
+      "url": "https://www.skylinewebcams.com/fr/webcam/united-kingdom/wales/cardiff/cardiff.html",
+      "enabled": true
+    },
+    {
+      "name": "trevi",
+      "display_name": "Fontaine de Trevi - Rome",
+      "url": "https://www.skylinewebcams.com/fr/webcam/italia/lazio/roma/fontana-di-trevi.html",
+      "enabled": true
+    },
+    {
+      "name": "madrid",
+      "display_name": "Madrid - Plaza del Callao",
+      "url": "https://www.skylinewebcams.com/fr/webcam/espana/comunidad-de-madrid/madrid/madrid-plaza-del-callao.html",
+      "enabled": true
+    }
+  ],
+  "settings": {
+    "interval_minutes": 1,
+    "wait_time": 15,
+    "api_url": "http://localhost:5000/api/webcam"
+  }
+}

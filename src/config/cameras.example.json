@@ -1,0 +1,69 @@
+{
+  "cameras": [
+    {
+      "name": "cardiff",
+      "display_name": "Cardiff - Pays de Galles",
+      "url": "https://www.skylinewebcams.com/fr/webcam/united-kingdom/wales/cardiff/cardiff.html",
+      "enabled": true
+    },
+    {
+      "name": "trevi",
+      "display_name": "Fontaine de Trevi - Rome",
+      "url": "https://www.skylinewebcams.com/fr/webcam/italia/lazio/roma/fontana-di-trevi.html",
+      "enabled": true
+    },
+    {
+      "name": "paris",
+      "display_name": "Paris - Tour Eiffel",
+      "url": "https://www.skylinewebcams.com/fr/webcam/france/ile-de-france/paris/eiffel-tower.html",
+      "enabled": false
+    },
+    {
+      "name": "london",
+      "display_name": "Londres - Big Ben",
+      "url": "https://www.skylinewebcams.com/fr/webcam/united-kingdom/england/london/big-ben.html",
+      "enabled": false
+    },
+    {
+      "name": "barcelona",
+      "display_name": "Barcelone - Sagrada Familla",
+      "url": "https://www.skylinewebcams.com/fr/webcam/espagne/catalogne/barcelone/sagrada-familia.html",
+      "enabled": false
+    },
+    {
+      "name": "amsterdam",
+      "display_name": "Amsterdam - Canaux",
+      "url": "https://www.skylinewebcams.com/fr/webcam/pays-bas/hollande-septentrionale/amsterdam/canals.html",
+      "enabled": false
+    },
+    {
+      "name": "tokyo",
+      "display_name": "Tokyo - Shibuya",
+      "url": "https://www.skylinewebcams.com/fr/webcam/japan/tokyo/shibuya.html",
+      "enabled": false
+    },
+    {
+      "name": "new_york",
+      "display_name": "New York - Times Square",
+      "url": "https://www.skylinewebcams.com/fr/webcam/usa/new-york/new-york/times-square.html",
+      "enabled": false
+    },
+    {
+      "name": "sydney",
+      "display_name": "Sydney - Opéra House",
+      "url": "https://www.skylinewebcams.com/fr/webcam/australie/new-south-wales/sydney/opera-house.html",
+      "enabled": false
+    },
+    {
+      "name": "dubai",
+      "display_name": "Dubai - Burj Khalifa",
+      "url": "https://www.skylinewebcams.com/fr/webcam/united-arab-emirates/dubai/burj-khalifa.html",
+      "enabled": false
+    }
+  ],
+  "settings": {
+    "interval_minutes": 1,
+    "wait_time": 15,
+    "api_url": "http://localhost:5000/api/webcam"
+  }
+}

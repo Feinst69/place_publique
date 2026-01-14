@@ -97,7 +97,7 @@ def download_all_models():
 
 if __name__ == "__main__":
     # Configuration
-    MODEL_NAME = 'yolov8n.pt'  # Utilisez YOLOv8 si YOLO11 ne fonctionne pas
+    MODEL_NAME = 'yolo11l.pt'  # Utilisez YOLOv8 si YOLO11 ne fonctionne pas
     
     print("Note: Si YOLO11 ne fonctionne pas, le script essaiera YOLOv8\n")
     
@@ -105,12 +105,12 @@ if __name__ == "__main__":
     model = download_yolo_model(MODEL_NAME)
     
     # Si échec avec YOLO11, essayer YOLOv8
-    if model is None and 'yolo11' in MODEL_NAME:
-        print("\n" + "="*50)
-        print("Tentative avec YOLOv8 à la place...")
-        print("="*50 + "\n")
-        MODEL_NAME = MODEL_NAME.replace('yolo11', 'yolov8')
-        download_yolo_model(MODEL_NAME)
+    # if model is None and 'yolo11' in MODEL_NAME:
+    #     print("\n" + "="*50)
+    #     print("Tentative avec YOLOv8 à la place...")
+    #     print("="*50 + "\n")
+        # MODEL_NAME = MODEL_NAME.replace('yolo11', 'yolov8')
+        # download_yolo_model(MODEL_NAME)
     
     # Option 2: Télécharger tous les modèles (décommenter si besoin)
-    # download_all_models()
+    download_all_models()
