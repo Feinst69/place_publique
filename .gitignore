@@ -1,2 +1,5 @@
 pb_env/
 data/
+venv_yolo/
+__pycache__/
+./__pycache__
