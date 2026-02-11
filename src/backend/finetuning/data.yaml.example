@@ -1,0 +1,175 @@
+# Configuration YOLO Dataset
+# Ce fichier définit la structure de votre dataset pour l'entraînement YOLO
+
+# Chemin racine du dataset (absolu ou relatif)
+path: /path/to/your/dataset  # ⚠️ À MODIFIER
+
+# Chemins relatifs vers les images (par rapport à 'path')
+train: images/train  # Images d'entraînement
+val: images/val      # Images de validation
+test: images/test    # Images de test (optionnel)
+
+# Nombre de classes
+nc: 80  # ⚠️ À MODIFIER selon votre dataset
+
+# Noms des classes (l'index correspond à l'ID de classe dans les labels)
+names:
+  0: person
+  1: bicycle
+  2: car
+  3: motorcycle
+  4: airplane
+  5: bus
+  6: train
+  7: truck
+  8: boat
+  9: traffic light
+  10: fire hydrant
+  11: stop sign
+  12: parking meter
+  13: bench
+  14: bird
+  15: cat
+  16: dog
+  17: horse
+  18: sheep
+  19: cow
+  20: elephant
+  21: bear
+  22: zebra
+  23: giraffe
+  24: backpack
+  25: umbrella
+  26: handbag
+  27: tie
+  28: suitcase
+  29: frisbee
+  30: skis
+  31: snowboard
+  32: sports ball
+  33: kite
+  34: baseball bat
+  35: baseball glove
+  36: skateboard
+  37: surfboard
+  38: tennis racket
+  39: bottle
+  40: wine glass
+  41: cup
+  42: fork
+  43: knife
+  44: spoon
+  45: bowl
+  46: banana
+  47: apple
+  48: sandwich
+  49: orange
+  50: broccoli
+  51: carrot
+  52: hot dog
+  53: pizza
+  54: donut
+  55: cake
+  56: chair
+  57: couch
+  58: potted plant
+  59: bed
+  60: dining table
+  61: toilet
+  62: tv
+  63: laptop
+  64: mouse
+  65: remote
+  66: keyboard
+  67: cell phone
+  68: microwave
+  69: oven
+  70: toaster
+  71: sink
+  72: refrigerator
+  73: book
+  74: clock
+  75: vase
+  76: scissors
+  77: teddy bear
+  78: hair drier
+  79: toothbrush
+
+# ============================================================================
+# EXEMPLE POUR UN DATASET CUSTOM (ex: détection de véhicules)
+# ============================================================================
+# 
+# path: /home/user/datasets/vehicles
+# train: images/train
+# val: images/val
+# 
+# nc: 3
+# names:
+#   0: car
+#   1: truck
+#   2: bus
+
+# ============================================================================
+# STRUCTURE DU DATASET ATTENDUE
+# ============================================================================
+# 
+# dataset/
+# ├── data.yaml (ce fichier)
+# ├── images/
+# │   ├── train/
+# │   │   ├── image1.jpg
+# │   │   ├── image2.jpg
+# │   │   └── ...
+# │   └── val/
+# │       ├── image1.jpg
+# │       ├── image2.jpg
+# │       └── ...
+# └── labels/
+#     ├── train/
+#     │   ├── image1.txt  (même nom que l'image)
+#     │   ├── image2.txt
+#     │   └── ...
+#     └── val/
+#         ├── image1.txt
+#         ├── image2.txt
+#         └── ...
+#
+# ============================================================================
+# FORMAT DES FICHIERS LABELS (.txt)
+# ============================================================================
+# 
+# Chaque ligne représente un objet détecté:
+# <class_id> <x_center> <y_center> <width> <height>
+# 
+# Où:
+# - class_id: ID de la classe (0, 1, 2, ...)
+# - x_center, y_center: Coordonnées du centre de la bounding box (normalisées 0-1)
+# - width, height: Largeur et hauteur de la bounding box (normalisées 0-1)
+# 
+# Exemple de fichier label (image1.txt):
+# 0 0.5 0.5 0.3 0.4
+# 1 0.2 0.3 0.1 0.2
+# 2 0.8 0.7 0.15 0.25
+# 
+# ⚠️ Les coordonnées sont normalisées par rapport à la taille de l'image!
+#    x_center = x_pixel / image_width
+#    y_center = y_pixel / image_height
+#    width = box_width_pixel / image_width
+#    height = box_height_pixel / image_height
+
+# ============================================================================
+# EXEMPLE POUR PLACE PUBLIQUE (webcam surveillance)
+# ============================================================================
+# 
+# Si vous voulez détecter des personnes, véhicules, etc. sur vos webcams:
+# 
+# path: c:/Users/idirs/Desktop/M2IA/place_publique/data/dataset
+# train: images/train
+# val: images/val
+# 
+# nc: 4
+# names:
+#   0: person
+#   1: car
+#   2: bicycle
+#   3: bus
