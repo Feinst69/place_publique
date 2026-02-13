@@ -1,8 +1,8 @@
 import os
 import cv2
-import uuid
 import time
 import json
+import threading
 from flask import Flask, render_template, send_file, jsonify, request
 from flask_socketio import SocketIO
 from ultralytics import YOLO
@@ -40,17 +40,19 @@ db_class = DetectionClassDatabase()
 
 model = YOLO(MODEL_PATH)
 
+
+def is_processed(image_filename):
+    """Vérifie si une image est déjà enregistrée en base."""
+    return db_main.get_detection_by_url(image_filename) is not None
+
 def process_image(file_path):
     try:
         time.sleep(0.5) # Securite pour ecriture fichier
         results = model.predict(source=file_path, conf=0.25, save=False, verbose=False)
         result = results[0]
-
-        uid = uuid.uuid4().hex
-        timestamp = time.strftime("%Y%m%d_%H%M%S")
         
-        # 1. Sauvegarde de l'image annotee
-        image_name = f"det_{timestamp}_{uid}.png"
+        # 1. Sauvegarde de l'image annotee (meme nom que l'image source, comme yolo_test_inference)
+        image_name = os.path.basename(file_path)
         image_save_path = os.path.join(IMAGE_OUT_DIR, image_name)
         annotated_img = result.plot()
         cv2.imwrite(image_save_path, annotated_img)
@@ -70,18 +72,18 @@ def process_image(file_path):
                 detection_count[class_name] = detection_count.get(class_name, 0) + 1
 
         data_payload = {
-            "image_id": uid,
+            "image_id": os.path.splitext(image_name)[0],
             "date": time.strftime("%Y-%m-%d"),  # Ajout de la date
             "time": time.strftime("%H:%M:%S"),  # Heure
             "datetime": time.strftime("%Y-%m-%d %H:%M:%S"),  # Date et heure combinées
             "num_detections": len(detections),
             "detection_count": detection_count,
             "detections": detections,
-            "image_url": f"/image/{image_name}"
+            "image_url": f"/api/image/{image_name}"
         }
 
         # 3. Sauvegarde du fichier JSON
-        json_name = f"data_{timestamp}_{uid}.json"
+        json_name = f"{os.path.splitext(image_name)[0]}.json"
         with open(os.path.join(JSON_OUT_DIR, json_name), 'w') as f:
             json.dump(data_payload, f, indent=4)
 
@@ -130,11 +132,45 @@ class ImageHandler(FileSystemEventHandler):
         if not event.is_directory and event.src_path.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
             process_image(event.src_path)
 
+
+def process_latest_pending_image():
+    """Rattrapage: traite la dernière image brute non encore traitée."""
+    try:
+        if not os.path.isdir(WATCH_DIR):
+            return
+
+        candidates = [
+            os.path.join(WATCH_DIR, f)
+            for f in os.listdir(WATCH_DIR)
+            if f.lower().endswith((".png", ".jpg", ".jpeg", ".webp"))
+        ]
+        if not candidates:
+            return
+
+        latest_file = max(candidates, key=os.path.getmtime)
+        latest_name = os.path.basename(latest_file)
+        if not is_processed(latest_name):
+            print(f"Rattrapage: traitement de {latest_name}")
+            process_image(latest_file)
+    except Exception as e:
+        print(f"Erreur rattrapage image: {e}")
+
+
+def start_fallback_scanner(interval_seconds=10):
+    """Scanner périodique pour éviter les événements filesystem manqués."""
+    def _loop():
+        while True:
+            process_latest_pending_image()
+            time.sleep(interval_seconds)
+
+    thread = threading.Thread(target=_loop, daemon=True)
+    thread.start()
+
 @app.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/image/<filename>")
+@app.route("/api/image/<filename>")
 def get_image(filename):
     return send_file(os.path.join(IMAGE_OUT_DIR, filename))
 
@@ -145,6 +181,40 @@ def get_detections():
     offset = request.args.get('offset', default=0, type=int)
     detections = db_main.get_all_detections(limit=limit, offset=offset)
     return jsonify(detections)
+
+@app.route("/api/detections/latest")
+def get_latest_detection():
+    """Endpoint pour récupérer la dernière détection avec ses classes"""
+    detections = db_main.get_all_detections(limit=1, offset=0)
+    if not detections:
+        return jsonify({"error": "No detection found"}), 404
+
+    latest = detections[0]
+    image_filename = os.path.basename(latest["image_url"])
+    classes = db_class.get_class_by_image(image_filename)
+
+    detection_count = {}
+    detections_list = []
+    for cls in classes:
+        class_name = cls["class"]
+        count = cls["detection_count"]
+        detection_count[class_name] = count
+        detections_list.append({
+            "class": class_name,
+            "confidence": cls["confidence"],
+        })
+
+    payload = {
+        "image_id": image_filename.rsplit(".", 1)[0],
+        "date": latest["date"],
+        "time": latest["time"],
+        "datetime": latest["datetime"],
+        "num_detections": latest["num_detections"],
+        "detection_count": detection_count,
+        "detections": detections_list,
+        "image_url": f"/api/image/{image_filename}",
+    }
+    return jsonify(payload)
 
 @app.route("/api/detections/<image_id>")
 def get_detection(image_id):
@@ -177,6 +247,13 @@ def get_detections_by_class(class_name):
     return jsonify(classes)
 
 if __name__ == "__main__":
+    os.makedirs(WATCH_DIR, exist_ok=True)
+
+    # Rattrapage immédiat au démarrage (si des images existent déjà)
+    process_latest_pending_image()
+    # Fallback continu si watchdog manque un événement
+    start_fallback_scanner(interval_seconds=10)
+
     event_handler = ImageHandler()
     observer = Observer()
     observer.schedule(event_handler, WATCH_DIR, recursive=False)

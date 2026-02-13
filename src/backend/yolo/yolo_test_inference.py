@@ -8,7 +8,7 @@ from collections import defaultdict
 # CONFIG
 # =============================
 MODEL_PATH = r"data/final/weights_model/yolov8n.pt"
-IMAGE_PATH = r"data/raw/webcam_bergen_snapshots/bergen_20260106_192611.png"
+IMAGE_PATH = r"data/raw/webcam_bergen_snapshots/bergen_20260213_120318.png"
 
 JSON_DIR = r"data/final/yolo_json"
 IMAGE_OUT_DIR = r"data/final/image_annoted"
