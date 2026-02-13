@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from datetime import datetime
 from pathlib import Path
+import base64
 import shutil
 import time
 import schedule
@@ -47,6 +48,77 @@ def save_metadata(metadata_file, data):
     """Sauvegarde le fichier JSON de métadonnées"""
     with open(metadata_file, 'w', encoding='utf-8') as f:
         json.dump(data, indent=2, ensure_ascii=False, fp=f)
+
+def get_best_video_clip(driver):
+    """Trouve la meilleure zone vidéo visible à capturer dans le viewport."""
+    script = """
+        const selectors = [
+          "video",
+          ".video-js video",
+          ".vjs-tech",
+          ".video-js",
+          "iframe[src*='skyline']",
+          "iframe[src*='player']",
+          "iframe",
+          "[class*='player' i]"
+        ];
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const cx = vw / 2;
+        const cy = vh / 2;
+
+        function isVisible(el) {
+          const style = window.getComputedStyle(el);
+          if (style.display === "none" || style.visibility === "hidden" || parseFloat(style.opacity) === 0) return false;
+          const rect = el.getBoundingClientRect();
+          return rect.width > 120 && rect.height > 80;
+        }
+
+        const candidates = [];
+        for (const selector of selectors) {
+          for (const el of document.querySelectorAll(selector)) {
+            if (!isVisible(el)) continue;
+            const rect = el.getBoundingClientRect();
+            const x = Math.max(0, rect.left);
+            const y = Math.max(0, rect.top);
+            const right = Math.min(vw, rect.right);
+            const bottom = Math.min(vh, rect.bottom);
+            const width = right - x;
+            const height = bottom - y;
+            if (width < 240 || height < 135) continue;
+
+            const aspect = width / height;
+            const area = width * height;
+            const ex = x + width / 2;
+            const ey = y + height / 2;
+            const dist = Math.hypot(ex - cx, ey - cy);
+            const aspectPenalty = (aspect < 1.2 || aspect > 2.4) ? 0.4 : 1.0;
+            const score = area * aspectPenalty - dist * 200;
+
+            candidates.push({x, y, width, height, selector, score});
+          }
+        }
+
+        if (!candidates.length) return null;
+        candidates.sort((a, b) => b.score - a.score);
+        return candidates[0];
+    """
+    return driver.execute_script(script)
+
+def save_clip_screenshot(driver, filename, clip):
+    """Capture un screenshot d'une zone (clip) via le protocole DevTools."""
+    result = driver.execute_cdp_cmd("Page.captureScreenshot", {
+        "format": "png",
+        "clip": {
+            "x": float(clip["x"]),
+            "y": float(clip["y"]),
+            "width": float(clip["width"]),
+            "height": float(clip["height"]),
+            "scale": 1
+        }
+    })
+    with open(filename, "wb") as f:
+        f.write(base64.b64decode(result["data"]))
 
 def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
     """Capture une frame de la webcam"""
@@ -102,6 +174,7 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
         ]
         
         video_clicked = False
+        video_element = None
         for selector in video_selectors:
             try:
                 element = WebDriverWait(driver, 3).until(
@@ -110,6 +183,8 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
                 element.click()
                 print(f"Clic sur la vidéo réussi: {selector}")
                 video_clicked = True
+                if selector in ("video", "div[class*='player' i]", "iframe"):
+                    video_element = element
                 time.sleep(2)
                 break
             except:
@@ -190,8 +265,31 @@ def capture_webcam(driver, SAVE_DIR, WEBCAM_URL, WAIT_TIME, metadata_file):
         print(f"Attente de {WAIT_TIME} secondes pour stabilisation...")
         time.sleep(WAIT_TIME)
         
-        # ÉTAPE 4 : Prendre le screenshot
-        driver.save_screenshot(str(filename))
+        # ÉTAPE 4 : Capture robuste de la zone vidéo (CDP clip), puis fallback
+        screenshot_done = False
+        clip = get_best_video_clip(driver)
+        if clip:
+            try:
+                save_clip_screenshot(driver, str(filename), clip)
+                screenshot_done = True
+                print(
+                    f"Screenshot clip vidéo via CDP: selector={clip.get('selector')} "
+                    f"rect=({int(clip['x'])},{int(clip['y'])},{int(clip['width'])}x{int(clip['height'])})"
+                )
+            except Exception as e:
+                print(f"Échec capture clip CDP: {e}")
+        
+        if not screenshot_done and video_element is not None:
+            try:
+                video_element.screenshot(str(filename))
+                screenshot_done = True
+                print("Fallback: screenshot de l'élément vidéo détecté")
+            except Exception as e:
+                print(f"Échec fallback élément vidéo: {e}")
+        
+        if not screenshot_done:
+            print("Aucun élément vidéo exploitable trouvé, fallback screenshot page entière")
+            driver.save_screenshot(str(filename))
         
         file_size = filename.stat().st_size / 1024
         print(f"Snapshot sauvegardé: {filename.name} ({file_size:.1f} KB)")
