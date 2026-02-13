@@ -1,0 +1,13 @@
+flask
+flask-socketio
+matplotlib
+opencv-python
+pandas
+pyyaml
+schedule
+seaborn
+selenium
+torch
+tqdm
+ultralytics
+watchdog

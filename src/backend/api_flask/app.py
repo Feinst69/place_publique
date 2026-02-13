@@ -22,7 +22,10 @@ FRONTEND_DIR = os.path.join(SRC_DIR, 'frontend')
 MODEL_PATH = os.path.join(BASE_DIR, "data/final/weights_model/yolov8n.pt")
 IMAGE_OUT_DIR = os.path.join(BASE_DIR, "data/final/image_annoted")
 JSON_OUT_DIR = os.path.join(BASE_DIR, "data/final/yolo_json")
-WATCH_DIR = r"C:\Users\idirs\Desktop\M2IA\place_publique\data\raw\webcam_bergen_snapshots"
+WATCH_DIR = os.getenv(
+    "WATCH_DIR",
+    os.path.join(BASE_DIR, "data/raw/webcam_bergen_snapshots")
+)
 
 app = Flask(__name__, template_folder=FRONTEND_DIR, static_folder=FRONTEND_DIR, static_url_path='')
 socketio = SocketIO(app, cors_allowed_origins="*")

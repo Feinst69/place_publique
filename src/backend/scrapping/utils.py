@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from datetime import datetime
 from pathlib import Path
+import shutil
 import time
 import schedule
 import json
@@ -24,7 +25,15 @@ def setup_driver():
     # Pour éviter la détection de bot
     chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
     
-    driver = webdriver.Chrome(options=chrome_options)
+    chromium_path = shutil.which("chromium") or shutil.which("chromium-browser")
+    if chromium_path:
+        chrome_options.binary_location = chromium_path
+
+    chromedriver_path = shutil.which("chromedriver")
+    if chromedriver_path:
+        driver = webdriver.Chrome(service=Service(chromedriver_path), options=chrome_options)
+    else:
+        driver = webdriver.Chrome(options=chrome_options)
     return driver
 
 def load_metadata(metadata_file):

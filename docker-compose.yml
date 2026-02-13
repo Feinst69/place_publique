@@ -1,0 +1,22 @@
+services:
+  scraper:
+    build: .
+    container_name: place_publique_scraper
+    restart: unless-stopped
+    command: ["python", "src/backend/scrapping/scrapping_skylinewebcams.py"]
+    volumes:
+      - ./data:/app/data
+
+  api:
+    build: .
+    container_name: place_publique_api
+    restart: unless-stopped
+    command: ["python", "src/backend/api_flask/app.py"]
+    environment:
+      - WATCH_DIR=/app/data/raw/webcam_bergen_snapshots
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - scraper
