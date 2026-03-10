@@ -10,3 +10,4 @@ __pycache__/
 "mlruns/" 
 "*.pt" 
 "*.pth" 
+"data/final/weights_model/" 
