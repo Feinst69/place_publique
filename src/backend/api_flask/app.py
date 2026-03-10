@@ -9,6 +9,7 @@ from ultralytics import YOLO
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import sys
+import threading
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -19,10 +20,23 @@ from database.db_detection_class import DetectionClassDatabase
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 SRC_DIR = os.path.join(BASE_DIR, 'src')
 FRONTEND_DIR = os.path.join(SRC_DIR, 'frontend')
-MODEL_PATH = os.path.join(BASE_DIR, "data/final/weights_model/yolov8n.pt")
+MODEL_PERSON_PATH = os.path.join(BASE_DIR, "data/final/weights_model/yolo11n.pt")
+MODEL_CAR_PATH    = os.path.join(BASE_DIR, "data/final/weights_model/yolo11s.pt")
 IMAGE_OUT_DIR = os.path.join(BASE_DIR, "data/final/image_annoted")
 JSON_OUT_DIR = os.path.join(BASE_DIR, "data/final/yolo_json")
-WATCH_DIR = r"C:\Users\idirs\Desktop\M2IA\place_publique\data\raw\webcam_bergen_snapshots"
+
+# Classes COCO a detecter
+PERSON_CLASSES = [0]           # person
+CAR_CLASSES    = [2, 5, 7]    # car, bus, truck -> tous remappes en "car"
+
+# Surveillance des 5 webcams : Cardiff, Madrid, Rome (Trevi), Murcia, La Palma
+WATCH_DIRS = [
+    os.path.join(BASE_DIR, "data", "raw", "webcam_cardiff_snapshots"),
+    os.path.join(BASE_DIR, "data", "raw", "webcam_madrid_snapshots"),
+    os.path.join(BASE_DIR, "data", "raw", "webcam_trevi_snapshots"),
+    os.path.join(BASE_DIR, "data", "raw", "webcam_murcia_snapshots"),
+    os.path.join(BASE_DIR, "data", "raw", "webcam_lapalma_snapshots"),
+]
 
 app = Flask(__name__, template_folder=FRONTEND_DIR, static_folder=FRONTEND_DIR, static_url_path='')
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -35,55 +49,91 @@ os.makedirs(JSON_OUT_DIR, exist_ok=True)
 db_main = DetectionMainDatabase()
 db_class = DetectionClassDatabase()
 
-model = YOLO(MODEL_PATH)
+# Chargement des deux modeles YOLO
+model_person = YOLO(MODEL_PERSON_PATH)  # yolo11n - detection personnes
+model_car    = YOLO(MODEL_CAR_PATH)     # yolo11s - detection vehicules
+
+# Mapping dossier -> label affichable
+CAMERA_LABELS = {
+    "webcam_cardiff_snapshots": "Cardiff",
+    "webcam_murcia_snapshots":  "Murcia",
+    "webcam_lapalma_snapshots": "La Palma",
+    "webcam_madrid_snapshots":  "Madrid",
+    "webcam_trevi_snapshots":   "Rome (Trevi)",
+}
 
 def process_image(file_path):
     try:
-        time.sleep(0.5) # Securite pour ecriture fichier
-        results = model.predict(source=file_path, conf=0.25, save=False, verbose=False)
-        result = results[0]
+        time.sleep(0.5)  # Securite pour ecriture fichier
+
+        img = cv2.imread(file_path)
+        if img is None:
+            print(f"Impossible de lire : {file_path}")
+            return
 
         uid = uuid.uuid4().hex
         timestamp = time.strftime("%Y%m%d_%H%M%S")
-        
+
+        detections = []
+        detection_count = {}
+
+        # --- Modele person ---
+        res_person = model_person.predict(
+            source=file_path, classes=PERSON_CLASSES,
+            conf=0.25, save=False, verbose=False
+        )[0]
+        if res_person.boxes is not None:
+            for box in res_person.boxes:
+                conf = round(float(box.conf[0]), 2)
+                x1, y1, x2, y2 = [int(v) for v in box.xyxy[0]]
+                cv2.rectangle(img, (x1, y1), (x2, y2), (219, 142, 0), 2)   # bleu
+                cv2.putText(img, f"person {conf}", (x1, y1 - 5),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (219, 142, 0), 1)
+                detections.append({"class": "person", "confidence": conf})
+                detection_count["person"] = detection_count.get("person", 0) + 1
+
+        # --- Modele car (truck/bus remappes en "car") ---
+        res_car = model_car.predict(
+            source=file_path, classes=CAR_CLASSES,
+            conf=0.25, save=False, verbose=False
+        )[0]
+        if res_car.boxes is not None:
+            for box in res_car.boxes:
+                conf = round(float(box.conf[0]), 2)
+                x1, y1, x2, y2 = [int(v) for v in box.xyxy[0]]
+                cv2.rectangle(img, (x1, y1), (x2, y2), (0, 0, 220), 2)     # rouge
+                cv2.putText(img, f"car {conf}", (x1, y1 - 5),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 220), 1)
+                detections.append({"class": "car", "confidence": conf})
+                detection_count["car"] = detection_count.get("car", 0) + 1
+
         # 1. Sauvegarde de l'image annotee
         image_name = f"det_{timestamp}_{uid}.png"
         image_save_path = os.path.join(IMAGE_OUT_DIR, image_name)
-        annotated_img = result.plot()
-        cv2.imwrite(image_save_path, annotated_img)
+        cv2.imwrite(image_save_path, img)
 
-        # 2. Preparation des donnees
-        detections = []
-        detection_count = {}  # Compteur par classe
-        
-        if result.boxes is not None:
-            for box in result.boxes:
-                class_name = model.names[int(box.cls[0])]
-                detections.append({
-                    "class": class_name,
-                    "confidence": round(float(box.conf[0]), 2)
-                })
-                # Compter par classe
-                detection_count[class_name] = detection_count.get(class_name, 0) + 1
-
+        # 2. Preparation du payload
+        folder_name = os.path.basename(os.path.dirname(file_path))
+        source_label = CAMERA_LABELS.get(folder_name, folder_name)
         data_payload = {
             "image_id": uid,
-            "date": time.strftime("%Y-%m-%d"),  # Ajout de la date
-            "time": time.strftime("%H:%M:%S"),  # Heure
-            "datetime": time.strftime("%Y-%m-%d %H:%M:%S"),  # Date et heure combinées
+            "date": time.strftime("%Y-%m-%d"),
+            "time": time.strftime("%H:%M:%S"),
+            "datetime": time.strftime("%Y-%m-%d %H:%M:%S"),
             "num_detections": len(detections),
             "detection_count": detection_count,
             "detections": detections,
-            "image_url": f"/image/{image_name}"
+            "image_url": f"/image/{image_name}",
+            "source": folder_name,
+            "source_label": source_label
         }
 
-        # 3. Sauvegarde du fichier JSON
+        # 3. Sauvegarde JSON
         json_name = f"data_{timestamp}_{uid}.json"
         with open(os.path.join(JSON_OUT_DIR, json_name), 'w') as f:
             json.dump(data_payload, f, indent=4)
 
-        # 4. Insertion dans les deux bases de données
-        # Insérer dans la DB principale des détections
+        # 4. Insertion DB
         is_inserted = db_main.insert_detection(
             image_url=data_payload['image_url'],
             date=data_payload['date'],
@@ -91,36 +141,38 @@ def process_image(file_path):
             datetime_str=data_payload['datetime'],
             num_detections=data_payload['num_detections']
         )
-        
-        # Insérer les détails dans la DB des classes
         if is_inserted:
             class_list = []
             for class_name, count in data_payload['detection_count'].items():
-                # Calculer la confiance moyenne pour cette classe
-                confidences = [obj['confidence'] for obj in data_payload['detections'] 
-                             if obj['class'] == class_name]
+                confidences = [obj['confidence'] for obj in data_payload['detections']
+                               if obj['class'] == class_name]
                 avg_confidence = round(sum(confidences) / len(confidences), 2) if confidences else 0.0
-                
-                class_list.append({
-                    'class': class_name,
-                    'confidence': avg_confidence,
-                    'count': count
-                })
-            
-            db_class.insert_batch_class(
-                image_url=data_payload['image_url'],
-                detections=class_list
-            )
-            print(f"✓ Données insérées dans les deux DB")
+                class_list.append({'class': class_name, 'confidence': avg_confidence, 'count': count})
+            db_class.insert_batch_class(image_url=data_payload['image_url'], detections=class_list)
+            print(f"Donnees inserees dans les deux DB")
         else:
-            print(f"✗ Erreur lors de l'insertion dans la DB")
+            print(f"Erreur lors de l'insertion dans la DB")
 
         # 5. Envoi au frontend
         socketio.emit('new_detection', data_payload)
-        print(f"Traite : {image_name} ({len(detections)} objets)")
+        socketio.emit('stats_update', get_db_stats())
+        print(f"Traite : {image_name} | person={detection_count.get('person',0)} car={detection_count.get('car',0)}")
 
     except Exception as e:
-        print(f"Erreur : {e}")
+        print(f"Erreur process_image : {e}")
+
+
+def get_db_stats():
+    """Construit le payload de stats depuis les deux DB."""
+    class_stats = db_class.get_class_statistics()
+    all_detections = db_main.get_all_detections()
+    total_images = len(all_detections)
+    total_objects = sum(d['num_detections'] for d in all_detections)
+    return {
+        'total_images': total_images,
+        'total_objects': total_objects,
+        'class_stats': class_stats
+    }
 
 class ImageHandler(FileSystemEventHandler):
     def on_created(self, event):
@@ -130,6 +182,11 @@ class ImageHandler(FileSystemEventHandler):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/stats")
+def stats_page():
+    return render_template("stats.html")
 
 @app.route("/image/<filename>")
 def get_image(filename):
@@ -141,6 +198,10 @@ def get_detections():
     limit = request.args.get('limit', type=int)
     offset = request.args.get('offset', default=0, type=int)
     detections = db_main.get_all_detections(limit=limit, offset=offset)
+    for det in detections:
+        filename = det.get('image_url', '').split('/')[-1]
+        classes = db_class.get_class_by_image(filename)
+        det['class_counts'] = {c['class']: c['detection_count'] for c in classes}
     return jsonify(detections)
 
 @app.route("/api/detections/<image_id>")
@@ -160,6 +221,31 @@ def get_statistics():
     stats = db_class.get_class_statistics()
     return jsonify(stats)
 
+
+@app.route("/api/stats")
+def get_stats():
+    """Endpoint stats globales pour le dashboard"""
+    return jsonify(get_db_stats())
+
+
+@app.route("/api/db_stats")
+def get_db_stats_endpoint():
+    """Stats approfondies depuis la DB : timeline, heure, classes, résumé."""
+    summary = db_main.get_summary()
+    per_day = db_main.get_detections_per_day()
+    hourly = db_main.get_hourly_activity()
+    class_stats = db_class.get_class_statistics()
+    class_trend = db_class.get_class_trend_per_day()
+    per_frame = db_class.get_per_frame_counts()
+    return jsonify({
+        'summary': summary,
+        'per_day': per_day,
+        'hourly': hourly,
+        'class_stats': class_stats,
+        'class_trend': class_trend,
+        'per_frame': per_frame
+    })
+
 @app.route("/api/detections/date/<date>")
 def get_detections_by_date(date):
     """Endpoint pour récupérer les détections par date (YYYY-MM-DD)"""
@@ -176,9 +262,12 @@ def get_detections_by_class(class_name):
 if __name__ == "__main__":
     event_handler = ImageHandler()
     observer = Observer()
-    observer.schedule(event_handler, WATCH_DIR, recursive=False)
+    for watch_dir in WATCH_DIRS:
+        os.makedirs(watch_dir, exist_ok=True)
+        observer.schedule(event_handler, watch_dir, recursive=False)
+        print(f"Surveillance: {watch_dir}")
     observer.start()
-    print(f"Serveur Flask démarré sur http://0.0.0.0:5000")
+    print(f"\nServeur Flask démarré sur http://0.0.0.0:5000")
     print(f"DB Main: {db_main.db_path}")
     print(f"DB Class: {db_class.db_path}")
     socketio.run(app, host="0.0.0.0", port=5000, debug=False, allow_unsafe_werkzeug=True)

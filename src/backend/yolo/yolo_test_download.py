@@ -42,11 +42,11 @@ def download_yolo_model(model_name='yolo11n.pt'):
         # Télécharger et charger le modèle (YOLO télécharge automatiquement)
         print(f"Tentative de téléchargement: {model_base_name}")
         model = YOLO(model_base_name)  # Sans le .pt, YOLO gère automatiquement
-        print(f"✓ {model_name} téléchargé avec succès!")
+        print(f"{model_name} téléchargé avec succès!")
         
         # Vérifier le chemin du modèle
         if hasattr(model, 'ckpt_path'):
-            print(f"✓ Modèle sauvegardé dans: {model.ckpt_path}")
+            print(f"Modèle sauvegardé dans: {model.ckpt_path}")
         
         # Afficher les informations
         print(f"\nInformations sur le modèle:")
@@ -56,7 +56,7 @@ def download_yolo_model(model_name='yolo11n.pt'):
         # Test rapide
         print(f"\nTest rapide du modèle...")
         results = model.predict('https://ultralytics.com/images/bus.jpg', verbose=False)
-        print(f"✓ Test réussi - {len(results[0].boxes)} objets détectés")
+        print(f"Test réussi - {len(results[0].boxes)} objets détectés")
         
         print(f"\n{'='*50}")
         print(f"Modèle prêt à l'emploi!")
@@ -66,7 +66,7 @@ def download_yolo_model(model_name='yolo11n.pt'):
         return model
         
     except Exception as e:
-        print(f"✗ Erreur lors du téléchargement: {e}")
+        print(f"Erreur lors du téléchargement: {e}")
         print("\nSi YOLO11 ne fonctionne pas, essayez YOLOv8:")
         print("  - Changez MODEL_NAME en 'yolov8n.pt'")
         print("\nVérifiez aussi:")
@@ -92,7 +92,7 @@ def download_all_models():
         print(f"\n--- {model_name} ---")
         download_yolo_model(model_name)
     
-    print("\n✓ Tous les modèles ont été téléchargés!")
+    print("\nTous les modèles ont été téléchargés!")
 
 
 if __name__ == "__main__":

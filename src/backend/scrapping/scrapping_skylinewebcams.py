@@ -19,7 +19,7 @@ from src.config.paths import RAW_DATA_DIR, PROCESSED_DATA_DIR
 
 # Configuration
 WEBCAM_URL = "https://www.skylinewebcams.com/fr/webcam/united-kingdom/wales/cardiff/cardiff.html"
-SAVE_DIR = Path(RAW_DATA_DIR) / "webcam_bergen_snapshots"
+SAVE_DIR = Path(RAW_DATA_DIR) / "webcam_cardiff_snapshots"
 METADATA_DIR = Path(PROCESSED_DATA_DIR) / "web_cam_cardiff_metadata"
 METADATA_FILE = METADATA_DIR / "captures_metadata.json"
 INTERVAL_MINUTES = 1  # Modifier selon vos besoins

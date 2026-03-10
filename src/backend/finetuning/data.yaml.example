@@ -2,7 +2,7 @@
 # Ce fichier définit la structure de votre dataset pour l'entraînement YOLO
 
 # Chemin racine du dataset (absolu ou relatif)
-path: /path/to/your/dataset  # ⚠️ À MODIFIER
+path: /path/to/your/dataset  # À MODIFIER
 
 # Chemins relatifs vers les images (par rapport à 'path')
 train: images/train  # Images d'entraînement
@@ -10,7 +10,7 @@ val: images/val      # Images de validation
 test: images/test    # Images de test (optionnel)
 
 # Nombre de classes
-nc: 80  # ⚠️ À MODIFIER selon votre dataset
+nc: 80  # À MODIFIER selon votre dataset
 
 # Noms des classes (l'index correspond à l'ID de classe dans les labels)
 names:
@@ -151,7 +151,7 @@ names:
 # 1 0.2 0.3 0.1 0.2
 # 2 0.8 0.7 0.15 0.25
 # 
-# ⚠️ Les coordonnées sont normalisées par rapport à la taille de l'image!
+# Les coordonnées sont normalisées par rapport à la taille de l'image!
 #    x_center = x_pixel / image_width
 #    y_center = y_pixel / image_height
 #    width = box_width_pixel / image_width

@@ -16,22 +16,29 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parents[3]
 
 # Chemins des scripts
-SCRAPPING_SCRIPT = BASE_DIR / "src" / "backend" / "scrapping" / "scrapping_skylinewebcams.py"
+SCRAPPING_CARDIFF = BASE_DIR / "src" / "backend" / "scrapping" / "scrapping_skylinewebcams.py"
+SCRAPPING_MADRID  = BASE_DIR / "src" / "backend" / "scrapping" / "scrapping_madrid.py"
+SCRAPPING_TREVI   = BASE_DIR / "src" / "backend" / "scrapping" / "scrapping_trevi.py"
+SCRAPPING_MURCIA  = BASE_DIR / "src" / "backend" / "scrapping" / "scrapping_murcia.py"
+SCRAPPING_LAPALMA = BASE_DIR / "src" / "backend" / "scrapping" / "scrapping_lapalma.py"
 API_SCRIPT = BASE_DIR / "src" / "backend" / "api_flask" / "app.py"
-VENV_PYTHON = BASE_DIR / "pb_env" / "Scripts" / "python.exe"
+VENV_PYTHON = BASE_DIR / "venv_yolo" / "Scripts" / "python.exe"
 
 def check_scripts_exist():
     """Vérifier que les scripts existent"""
-    if not SCRAPPING_SCRIPT.exists():
-        print(f"❌ Erreur: Script de scrapping introuvable: {SCRAPPING_SCRIPT}")
-        return False
-    if not API_SCRIPT.exists():
-        print(f"❌ Erreur: Script API introuvable: {API_SCRIPT}")
-        return False
-    if not VENV_PYTHON.exists():
-        print(f"❌ Erreur: Python virtual env introuvable: {VENV_PYTHON}")
-        return False
-    return True
+    required = [
+        (SCRAPPING_CARDIFF, "Scrapping Cardiff"),
+        (SCRAPPING_MURCIA,  "Scrapping Murcia"),
+        (SCRAPPING_LAPALMA, "Scrapping La Palma"),
+        (API_SCRIPT,        "API Flask"),
+        (VENV_PYTHON,       "Python venv"),
+    ]
+    ok = True
+    for path, name in required:
+        if not path.exists():
+            print(f"Erreur: {name} introuvable: {path}")
+            ok = False
+    return ok
 
 def launch_processes():
     """Lancer les deux processus en parallèle"""
@@ -40,23 +47,28 @@ def launch_processes():
     print("=" * 70)
     
     processes = []
-    
+
     try:
-        # Lancer le scrapping
-        print("\nLancement du scrapping webcam...")
-        print(f"   Commande: {VENV_PYTHON} {SCRAPPING_SCRIPT}")
-        scrapping_process = subprocess.Popen(
-            [str(VENV_PYTHON), str(SCRAPPING_SCRIPT)],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1,
-            cwd=str(BASE_DIR)
-        )
-        processes.append(("Scrapping", scrapping_process))
-        print(f"Scrapping lancé (PID: {scrapping_process.pid})")
-        
-        # Attendre un peu avant de lancer l'API
+        # Lancer les scripts de scrapping
+        scrapping_scripts = [
+            ("Scrapping Cardiff",  SCRAPPING_CARDIFF),
+            ("Scrapping Murcia",   SCRAPPING_MURCIA),
+            ("Scrapping La Palma", SCRAPPING_LAPALMA),
+        ]
+        for name, script in scrapping_scripts:
+            if script.exists():
+                print(f"\nLancement {name}...")
+                proc = subprocess.Popen(
+                    [str(VENV_PYTHON), str(script)],
+                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                    text=True, bufsize=1, cwd=str(BASE_DIR)
+                )
+                processes.append((name, proc))
+                print(f"{name} lancé (PID: {proc.pid})")
+            else:
+                print(f"Script {name} introuvable, ignoré : {script}")
+
+        # Attendre avant de lancer l'API
         time.sleep(2)
         
         # Lancer l'API Flask
@@ -124,9 +136,9 @@ if __name__ == "__main__":
     print("=" * 70)
     
     if not check_scripts_exist():
-        print("\n❌ Vérification échouée. Veuillez vérifier les chemins.")
+        print("\nVérification échouée. Veuillez vérifier les chemins.")
         sys.exit(1)
     
-    print("✅ Tous les scripts sont présents\n")
+    print("Tous les scripts sont présents\n")
     
     launch_processes()

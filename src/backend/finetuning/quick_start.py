@@ -28,7 +28,7 @@ def check_dependencies():
             missing.append(package)
     
     if missing:
-        print(f"\n⚠️  Dépendances manquantes: {', '.join(missing)}")
+        print(f"\nDépendances manquantes: {', '.join(missing)}")
         print(f"Installez-les avec: pip install {' '.join(missing)}")
         return False
     
@@ -96,14 +96,14 @@ def quick_test():
     data_yaml = input("\nChemin data.yaml: ").strip()
     
     if not data_yaml:
-        print("⚠️  Aucun chemin fourni. Test annulé.")
+        print("Aucun chemin fourni. Test annulé.")
         return False
     
     print()
     
     # Vérifier le dataset
     if not check_dataset_structure(data_yaml):
-        print("\n⚠️  Problème avec la structure du dataset.")
+        print("\nProblème avec la structure du dataset.")
         print("Consultez le fichier data.yaml.example pour un exemple.")
         return False
     
@@ -174,7 +174,7 @@ def interactive_menu():
         
         data_yaml = input("\nChemin data.yaml: ").strip()
         if not data_yaml or not Path(data_yaml).exists():
-            print("⚠️  Fichier data.yaml non trouvé")
+            print("Fichier data.yaml non trouvé")
             return
         
         epochs = int(input("Nombre d'epochs (ex: 100): ").strip() or "100")
@@ -206,7 +206,7 @@ def interactive_menu():
         
         data_yaml = input("\nChemin data.yaml: ").strip()
         if not data_yaml or not Path(data_yaml).exists():
-            print("⚠️  Fichier data.yaml non trouvé")
+            print("Fichier data.yaml non trouvé")
             return
         
         from grid_search_training import GridSearchTrainer, get_minimal_grid
@@ -245,7 +245,7 @@ def interactive_menu():
         
         output_path = input("\nChemin de sortie (ex: data/my_dataset/data.yaml): ").strip()
         if not output_path:
-            print("⚠️  Aucun chemin fourni")
+            print("Aucun chemin fourni")
             return
         
         # Créer le dossier parent
@@ -263,13 +263,13 @@ def interactive_menu():
         return
     
     else:
-        print("\n⚠️  Choix invalide")
+        print("\nChoix invalide")
 
 
 def main():
     """Point d'entrée principal"""
     print("\n" + "="*60)
-    print("🚀 YOLO FINE-TUNING - DÉMARRAGE RAPIDE")
+    print("YOLO FINE-TUNING - DÉMARRAGE RAPIDE")
     print("="*60)
     
     # Vérifier les dépendances
@@ -292,7 +292,7 @@ def main():
             import traceback
             traceback.print_exc()
     
-    print("\n👋 Merci d'avoir utilisé YOLO Fine-Tuning!")
+    print("\nMerci d'avoir utilisé YOLO Fine-Tuning!")
 
 
 if __name__ == "__main__":

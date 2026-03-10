@@ -398,7 +398,7 @@ if __name__ == "__main__":
         print("="*60)
         
         # IMPORTANT: Avant d'exécuter, vérifiez que le chemin DATA_YAML est correct!
-        print("\n⚠️  ATTENTION: Assurez-vous que le chemin vers data.yaml est correct!")
+        print("\nATTENTION: Assurez-vous que le chemin vers data.yaml est correct!")
         print("Modifiez la variable DATA_YAML dans le code si nécessaire.")
         
         confirm = input("\nContinuer? (o/n): ").strip().lower()

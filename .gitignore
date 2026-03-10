@@ -3,3 +3,4 @@ data/
 venv_yolo/
 __pycache__/
 ./__pycache__
+*.ps1

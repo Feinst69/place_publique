@@ -13,7 +13,7 @@ class DetectionClassDatabase:
         """
         if db_path is None:
             # Chemin par défaut
-            base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+            base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
             db_path = os.path.join(base_dir, "data", "final", "db_detection_class.db")
             os.makedirs(os.path.dirname(db_path), exist_ok=True)
         
@@ -249,6 +249,42 @@ class DetectionClassDatabase:
             
             return stats
             
+        finally:
+            self.close()
+
+    def get_class_trend_per_day(self) -> List[Dict]:
+        """Total d'objets détectés par classe et par jour."""
+        conn = self.connect()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT class,
+                       DATE(created_at) as date,
+                       SUM(detection_count) as total
+                FROM detection_class
+                GROUP BY class, DATE(created_at)
+                ORDER BY date ASC, total DESC
+            """)
+            return [dict(row) for row in cursor.fetchall()]
+        finally:
+            self.close()
+
+    def get_per_frame_counts(self) -> List[Dict]:
+        """Retourne pour chaque image le nombre de person et de car détectés."""
+        conn = self.connect()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT
+                    image_url,
+                    created_at,
+                    SUM(CASE WHEN class = 'person' THEN detection_count ELSE 0 END) as person_count,
+                    SUM(CASE WHEN class = 'car'    THEN detection_count ELSE 0 END) as car_count
+                FROM detection_class
+                GROUP BY image_url
+                ORDER BY created_at ASC
+            """)
+            return [dict(row) for row in cursor.fetchall()]
         finally:
             self.close()
 

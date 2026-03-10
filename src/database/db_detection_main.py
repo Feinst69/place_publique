@@ -14,7 +14,7 @@ class DetectionMainDatabase:
         """
         if db_path is None:
             # Chemin par défaut
-            base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+            base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
             db_path = os.path.join(base_dir, "data", "final", "db_detection_main.db")
             os.makedirs(os.path.dirname(db_path), exist_ok=True)
         
@@ -160,26 +160,79 @@ class DetectionMainDatabase:
     def get_detections_by_date(self, date: str) -> List[Dict]:
         """
         Récupère toutes les détections d'une date spécifique.
-        
+
         Args:
             date: Date au format YYYY-MM-DD
-        
+
         Returns:
             Liste des détections
         """
         conn = self.connect()
         cursor = conn.cursor()
-        
+
         try:
             cursor.execute("""
                 SELECT * FROM detection_main 
                 WHERE date = ? 
                 ORDER BY time DESC
             """, (date,))
-            
+
             detections = [dict(row) for row in cursor.fetchall()]
             return detections
-            
+
+        finally:
+            self.close()
+
+    def get_detections_per_day(self) -> List[Dict]:
+        """Nombre d'images analysées et d'objets détectés par jour."""
+        conn = self.connect()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT date,
+                       COUNT(*) as images,
+                       SUM(num_detections) as objects
+                FROM detection_main
+                GROUP BY date
+                ORDER BY date ASC
+            """)
+            return [dict(row) for row in cursor.fetchall()]
+        finally:
+            self.close()
+
+    def get_hourly_activity(self) -> List[Dict]:
+        """Nombre d'analyses par heure de la journée (0-23)."""
+        conn = self.connect()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT CAST(substr(time, 1, 2) AS INTEGER) as hour,
+                       COUNT(*) as images,
+                       SUM(num_detections) as objects
+                FROM detection_main
+                GROUP BY hour
+                ORDER BY hour ASC
+            """)
+            return [dict(row) for row in cursor.fetchall()]
+        finally:
+            self.close()
+
+    def get_summary(self) -> Dict:
+        """Résumé global : total images, objets, moyenne, max, première/dernière."""
+        conn = self.connect()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT COUNT(*) as total_images,
+                       SUM(num_detections) as total_objects,
+                       ROUND(AVG(num_detections), 2) as avg_per_image,
+                       MAX(num_detections) as max_per_image,
+                       MIN(datetime) as first_detection,
+                       MAX(datetime) as last_detection
+                FROM detection_main
+            """)
+            row = cursor.fetchone()
+            return dict(row) if row else {}
         finally:
             self.close()
 

@@ -21,7 +21,7 @@ def reset_database():
             cursor_main.execute("DELETE FROM detection_main")
             conn_main.commit()
             db_main.close()
-            print("✓ Table detection_main vidée")
+            print("Table detection_main vidée")
             
             # Vider la base de données des classes
             conn_class = db_class.connect()
@@ -29,7 +29,7 @@ def reset_database():
             cursor_class.execute("DELETE FROM detection_class")
             conn_class.commit()
             db_class.close()
-            print("✓ Table detection_class vidée")
+            print("Table detection_class vidée")
             
             print("\nSuccès : Toutes les données ont été supprimées.")
                 

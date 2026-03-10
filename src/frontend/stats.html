@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Statistiques DB — YOLO Monitor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a2e; color: #eee; margin: 0; }
+        .header { background: #16213e; padding: 20px 30px; border-bottom: 2px solid #0f3460;
+                  display: flex; align-items: center; justify-content: space-between; }
+        .header h1 { margin: 0; color: #e94560; font-size: 1.6em; }
+        .header a { color: #aaa; text-decoration: none; font-size: 0.9em; }
+        .header a:hover { color: #e94560; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 25px; }
+
+        /* Cartes résumé */
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                         gap: 15px; margin-bottom: 30px; }
+        .card { background: #16213e; border-radius: 12px; padding: 20px; text-align: center;
+                border: 1px solid #0f3460; }
+        .card .val { font-size: 2.2em; font-weight: bold; color: #e94560; }
+        .card .lbl { color: #aaa; margin-top: 6px; font-size: 0.85em; }
+
+        /* Grille 2 colonnes */
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        @media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
+
+        .panel { background: #16213e; border-radius: 12px; padding: 20px; border: 1px solid #0f3460; }
+        .panel h2 { margin: 0 0 15px; color: #e94560; font-size: 1em;
+                    text-transform: uppercase; letter-spacing: 1px; }
+        .chart-wrap { position: relative; height: 260px; }
+
+        /* Tableau classes */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+        th { background: #0f3460; color: #e94560; padding: 10px; text-align: left; }
+        td { padding: 9px 10px; border-bottom: 1px solid #0f3460; }
+        tr:hover td { background: #0f3460; }
+        .badge { display: inline-block; background: #e94560; color: #fff;
+                 border-radius: 10px; padding: 2px 8px; font-size: 0.8em; }
+
+        /* Loader */
+        #loader { text-align: center; padding: 60px; color: #555; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Statistiques Base de Données</h1>
+    <a href="/">← Retour au flux live</a>
+</div>
+
+<div class="container">
+    <div id="loader">Chargement des statistiques...</div>
+    <div id="content" style="display:none;">
+
+        <!-- Résumé global -->
+        <div class="summary-cards">
+            <div class="card"><div class="val" id="s-images">—</div><div class="lbl">Images analysées</div></div>
+            <div class="card"><div class="val" id="s-objects">—</div><div class="lbl">Objets détectés</div></div>
+            <div class="card"><div class="val" id="s-avg">—</div><div class="lbl">Moy. objets / image</div></div>
+            <div class="card"><div class="val" id="s-max">—</div><div class="lbl">Max objets / image</div></div>
+            <div class="card"><div class="val" id="s-first">—</div><div class="lbl">Première détection</div></div>
+            <div class="card"><div class="val" id="s-last">—</div><div class="lbl">Dernière détection</div></div>
+        </div>
+
+        <!-- Timeline + Person/Car par frame -->
+        <div class="grid2">
+            <div class="panel">
+                <h2>Person &amp; Car par jour</h2>
+                <div class="chart-wrap"><canvas id="chartPerDay"></canvas></div>
+            </div>
+            <div class="panel">
+                <h2>Person / Car par image</h2>
+                <div class="chart-wrap"><canvas id="chartPerFrame"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Objets par classe + Confiance par classe -->
+        <div class="grid2">
+            <div class="panel">
+                <h2>Total objets par classe</h2>
+                <div class="chart-wrap"><canvas id="chartClassTotal"></canvas></div>
+            </div>
+            <div class="panel">
+                <h2>Confiance moyenne par classe</h2>
+                <div class="chart-wrap"><canvas id="chartClassConf"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Tableau détaillé des classes -->
+        <div class="panel">
+            <h2>Détail par classe (DB)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Classe</th>
+                        <th>Apparitions (images)</th>
+                        <th>Total objets</th>
+                        <th>Confiance moyenne</th>
+                    </tr>
+                </thead>
+                <tbody id="class-table-body"></tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+const COLORS = ['#e94560','#0f9b8e','#f0a500','#6c63ff','#ff6b6b','#4ecdc4','#45b7d1','#96ceb4','#ffeaa7','#dfe6e9'];
+
+function mkChart(id, type, labels, datasets, opts = {}) {
+    return new Chart(document.getElementById(id).getContext('2d'), {
+        type,
+        data: { labels, datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#aaa' } }, ...opts.plugins },
+            scales: type !== 'pie' && type !== 'doughnut' ? {
+                x: { ticks: { color: '#aaa' }, grid: { color: '#0f3460' } },
+                y: { ticks: { color: '#aaa' }, grid: { color: '#0f3460' }, beginAtZero: true }
+            } : {},
+            ...opts
+        }
+    });
+}
+
+fetch('/api/db_stats')
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+
+        // --- Résumé ---
+        const s = data.summary;
+        document.getElementById('s-images').textContent = s.total_images ?? '—';
+        document.getElementById('s-objects').textContent = s.total_objects ?? '—';
+        document.getElementById('s-avg').textContent = s.avg_per_image ?? '—';
+        document.getElementById('s-max').textContent = s.max_per_image ?? '—';
+        document.getElementById('s-first').textContent = s.first_detection ? s.first_detection.slice(0, 16) : '—';
+        document.getElementById('s-last').textContent = s.last_detection ? s.last_detection.slice(0, 16) : '—';
+
+        // --- Person & Car par jour ---
+        const trend = data.class_trend || [];
+        const daySet = [...new Set(trend.map(r => r.date))].sort();
+        function trendFor(cls) {
+            return daySet.map(d => {
+                const row = trend.find(r => r.class === cls && r.date === d);
+                return row ? row.total : 0;
+            });
+        }
+        mkChart('chartPerDay', 'bar', daySet,
+            [{ label: 'Person', data: trendFor('person'), backgroundColor: '#6c63ff', borderRadius: 4 },
+             { label: 'Car',    data: trendFor('car'),    backgroundColor: '#e94560', borderRadius: 4 }]
+        );
+
+        // --- Person / Car par frame (courbe) ---
+        const frames = data.per_frame || [];
+        const frameLabels = frames.map((f, i) => '#' + (i + 1));
+        new Chart(document.getElementById('chartPerFrame').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: frameLabels,
+                datasets: [
+                    { label: 'Person', data: frames.map(f => f.person_count),
+                      borderColor: '#6c63ff', backgroundColor: 'rgba(108,99,255,0.15)',
+                      tension: 0.3, pointRadius: 3, fill: true },
+                    { label: 'Car', data: frames.map(f => f.car_count),
+                      borderColor: '#e94560', backgroundColor: 'rgba(233,69,96,0.15)',
+                      tension: 0.3, pointRadius: 3, fill: true }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#aaa' } } },
+                scales: {
+                    x: { ticks: { color: '#aaa', maxTicksLimit: 20 }, grid: { color: '#0f3460' } },
+                    y: { ticks: { color: '#aaa' }, grid: { color: '#0f3460' }, beginAtZero: true }
+                }
+            }
+        });
+
+        // --- Classes (person + car uniquement) ---
+        const ALLOWED = ['person', 'car'];
+        const classes = Object.entries(data.class_stats).filter(([k]) => ALLOWED.includes(k));
+        const clsLabels = classes.map(([k]) => k);
+        const clsTotals = classes.map(([, v]) => v.total_detections);
+        const clsConf   = classes.map(([, v]) => v.avg_confidence);
+
+        mkChart('chartClassTotal', 'bar', clsLabels,
+            [{ label: 'Total objets', data: clsTotals,
+               backgroundColor: clsLabels.map((_, i) => COLORS[i % COLORS.length]), borderRadius: 4 }]
+        );
+
+        mkChart('chartClassConf', 'bar', clsLabels,
+            [{ label: 'Confiance moy.', data: clsConf,
+               backgroundColor: clsLabels.map((_, i) => COLORS[i % COLORS.length]), borderRadius: 4 }],
+            { plugins: {}, scales: {
+                x: { ticks: { color: '#aaa' }, grid: { color: '#0f3460' } },
+                y: { ticks: { color: '#aaa', callback: v => (v*100).toFixed(0)+'%' },
+                     grid: { color: '#0f3460' }, min: 0, max: 1 }
+            }}
+        );
+
+        // --- Tableau ---
+        const tbody = document.getElementById('class-table-body');
+        classes.forEach(([cls, v], i) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><span class="badge" style="background:${COLORS[i % COLORS.length]}">${cls}</span></td>
+                <td>${v.count}</td>
+                <td>${v.total_detections}</td>
+                <td>${(v.avg_confidence * 100).toFixed(1)}%</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    })
+    .catch(() => {
+        document.getElementById('loader').textContent = 'Erreur de chargement. Vérifiez que le serveur Flask tourne.';
+    });
+</script>
+</body>
+</html>

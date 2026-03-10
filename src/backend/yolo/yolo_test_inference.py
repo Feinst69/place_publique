@@ -83,10 +83,10 @@ with open(json_path, "w", encoding="utf-8") as f:
     json.dump(json_data, f, indent=4, ensure_ascii=False)
 
 
-print("✓ Inférence terminée")
-print(f"🖼️ Image annotée : {image_out_path}")
-print(f"📄 JSON : {json_path}")
+print("Inférence terminée")
+print(f"Image annotée : {image_out_path}")
+print(f"JSON : {json_path}")
 
-print("\n📊 Comptage par classe :")
+print("\nComptage par classe :")
 for cls, count in class_counts.items():
     print(f"  - {cls}: {count}")

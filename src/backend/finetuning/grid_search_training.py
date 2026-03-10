@@ -150,7 +150,7 @@ class GridSearchTrainer:
                 if score > self.best_score:
                     self.best_score = score
                     self.best_config = result_entry
-                    print(f"\n🏆 Nouveau meilleur modèle! {self.metric_to_optimize}: {score:.4f}")
+                    print(f"\nNouveau meilleur modèle! {self.metric_to_optimize}: {score:.4f}")
             
             # Sauvegarder les résultats intermédiaires
             self._save_results()
