@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/idirs/Desktop/M2IA/place_publique/runs/mlflow/475208719837866607/d76def5b713b4880b64187c4be77bf5b/artifacts
+end_time: 1773528733743
+entry_point_name: ''
+experiment_id: '475208719837866607'
+lifecycle_stage: active
+run_id: d76def5b713b4880b64187c4be77bf5b
+run_name: yolo11_people
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1773526834366
+status: 3
+tags: []
+user_id: idirs

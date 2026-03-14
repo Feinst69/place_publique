@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/idirs/Desktop/M2IA/place_publique/runs/mlflow/475208719837866607/d78d1292182e4caab809f3a198f9bf19/artifacts
+end_time: 1773515583411
+entry_point_name: ''
+experiment_id: '475208719837866607'
+lifecycle_stage: active
+run_id: d78d1292182e4caab809f3a198f9bf19
+run_name: yolo11_car4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1773510660176
+status: 3
+tags: []
+user_id: idirs

@@ -1,0 +1,6 @@
+artifact_location: file:///C:/Users/idirs/Desktop/M2IA/place_publique/runs/mlflow/912369932238564680
+creation_time: 1773528752883
+experiment_id: '912369932238564680'
+last_update_time: 1773528752883
+lifecycle_stage: active
+name: yolo11_people_finetune

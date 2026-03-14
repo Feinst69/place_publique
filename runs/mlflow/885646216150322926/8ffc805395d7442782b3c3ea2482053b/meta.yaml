@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/idirs/Desktop/M2IA/place_publique/runs/mlflow/885646216150322926/8ffc805395d7442782b3c3ea2482053b/artifacts
+end_time: 1773515605116
+entry_point_name: ''
+experiment_id: '885646216150322926'
+lifecycle_stage: active
+run_id: 8ffc805395d7442782b3c3ea2482053b
+run_name: run_car_20260314_201321
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1773515601547
+status: 3
+tags: []
+user_id: idirs
