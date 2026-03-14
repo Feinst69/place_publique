@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/idirs/Desktop/M2IA/place_publique/mlruns/974588394223985257/8dddaf0ef6aa4a828b990799689ea5c0/artifacts
+end_time: 1770995711725
+entry_point_name: ''
+experiment_id: '974588394223985257'
+lifecycle_stage: active
+run_id: 8dddaf0ef6aa4a828b990799689ea5c0
+run_name: full_yolo11x
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770985611702
+status: 3
+tags: []
+user_id: idirs

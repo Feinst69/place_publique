@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/idirs/Desktop/M2IA/place_publique/mlruns/407135525078652569/499b9e88868d4df2a3d7efa4da89347f/artifacts
+end_time: 1770944733262
+entry_point_name: ''
+experiment_id: '407135525078652569'
+lifecycle_stage: active
+run_id: 499b9e88868d4df2a3d7efa4da89347f
+run_name: clumsy-stork-714
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1770944732996
+status: 3
+tags: []
+user_id: idirs

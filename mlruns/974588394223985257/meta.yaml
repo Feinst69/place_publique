@@ -1,0 +1,6 @@
+artifact_location: file:///C:/Users/idirs/Desktop/M2IA/place_publique/mlruns/974588394223985257
+creation_time: 1770944557925
+experiment_id: '974588394223985257'
+last_update_time: 1770944557925
+lifecycle_stage: active
+name: yolo_roboflow_finetuning
