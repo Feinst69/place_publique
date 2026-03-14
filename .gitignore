@@ -1,5 +1,9 @@
 pb_env/
-data/
+data/*
+!data/final/
+data/final/*
+!data/final/db_detection_class.db
+!data/final/db_detection_main.db
 venv_yolo/
 __pycache__/
 ./__pycache__
@@ -15,6 +19,7 @@ runs/mlflow/**/artifacts/
 
 # Modèles lourds
 *.pt
+!models/best_people.pt
 *.pth
 
 # Artifacts MLflow (ancien chemin)
