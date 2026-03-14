@@ -4,15 +4,21 @@ venv_yolo/
 __pycache__/
 ./__pycache__
 *.ps1
+
 # Runs YOLO (predictions, grandes sorties)
-runs/
-# Modèles lourds à la racine et dans models/
+runs/detect/
+runs/predict/
+runs/val*/
+
+# Garder runs/mlflow/ mais exclure les artifacts lourds
+runs/mlflow/**/artifacts/
+
+# Modèles lourds
 *.pt
 *.pth
-models/
-# Artifacts MLflow (poids lourds) - mais on garde les métriques
+
+# Artifacts MLflow (ancien chemin)
 mlruns/**/artifacts/
+
 # Données finales lourdes
 data/final/weights_model/
-
-
