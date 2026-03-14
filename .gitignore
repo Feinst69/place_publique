@@ -4,11 +4,15 @@ venv_yolo/
 __pycache__/
 ./__pycache__
 *.ps1
-"mlruns/" 
-"*.pt" 
-"runs/" 
-"mlruns/" 
-"*.pt" 
-"*.pth" 
-"data/final/weights_model/" 
+# Runs YOLO (predictions, grandes sorties)
+runs/
+# Modèles lourds à la racine et dans models/
+*.pt
+*.pth
+models/
+# Artifacts MLflow (poids lourds) - mais on garde les métriques
+mlruns/**/artifacts/
+# Données finales lourdes
+data/final/weights_model/
+
 
