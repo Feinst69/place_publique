@@ -349,6 +349,836 @@
       "filename": "cardiff_20260310_131302.png",
       "timestamp": "2026-03-10T13:13:02.668693",
       "file_size_kb": 508.37
+    },
+    {
+      "filename": "cardiff_20260311_130411.png",
+      "timestamp": "2026-03-11T13:04:11.476588",
+      "file_size_kb": 563.45
+    },
+    {
+      "filename": "cardiff_20260311_130952.png",
+      "timestamp": "2026-03-11T13:09:52.808030",
+      "file_size_kb": 554.64
+    },
+    {
+      "filename": "cardiff_20260311_131553.png",
+      "timestamp": "2026-03-11T13:15:53.581620",
+      "file_size_kb": 545.9
+    },
+    {
+      "filename": "cardiff_20260311_132153.png",
+      "timestamp": "2026-03-11T13:21:53.673130",
+      "file_size_kb": 531.54
+    },
+    {
+      "filename": "cardiff_20260311_132644.png",
+      "timestamp": "2026-03-11T13:26:44.599878",
+      "file_size_kb": 533.49
+    },
+    {
+      "filename": "cardiff_20260311_133244.png",
+      "timestamp": "2026-03-11T13:32:44.077501",
+      "file_size_kb": 536.33
+    },
+    {
+      "filename": "cardiff_20260311_133849.png",
+      "timestamp": "2026-03-11T13:38:49.602540",
+      "file_size_kb": 564.61
+    },
+    {
+      "filename": "cardiff_20260311_134449.png",
+      "timestamp": "2026-03-11T13:44:49.020611",
+      "file_size_kb": 561.79
+    },
+    {
+      "filename": "cardiff_20260311_134938.png",
+      "timestamp": "2026-03-11T13:49:38.641293",
+      "file_size_kb": 521.04
+    },
+    {
+      "filename": "cardiff_20260311_135538.png",
+      "timestamp": "2026-03-11T13:55:38.693948",
+      "file_size_kb": 535.23
+    },
+    {
+      "filename": "cardiff_20260311_140138.png",
+      "timestamp": "2026-03-11T14:01:38.606600",
+      "file_size_kb": 527.49
+    },
+    {
+      "filename": "cardiff_20260311_140742.png",
+      "timestamp": "2026-03-11T14:07:42.603111",
+      "file_size_kb": 568.83
+    },
+    {
+      "filename": "cardiff_20260311_141232.png",
+      "timestamp": "2026-03-11T14:12:32.619955",
+      "file_size_kb": 549.79
+    },
+    {
+      "filename": "cardiff_20260311_141830.png",
+      "timestamp": "2026-03-11T14:18:30.133490",
+      "file_size_kb": 554.61
+    },
+    {
+      "filename": "cardiff_20260311_142425.png",
+      "timestamp": "2026-03-11T14:24:25.300831",
+      "file_size_kb": 564.41
+    },
+    {
+      "filename": "cardiff_20260311_143022.png",
+      "timestamp": "2026-03-11T14:30:22.978416",
+      "file_size_kb": 510.42
+    },
+    {
+      "filename": "cardiff_20260311_143511.png",
+      "timestamp": "2026-03-11T14:35:11.371248",
+      "file_size_kb": 514.92
+    },
+    {
+      "filename": "cardiff_20260311_144108.png",
+      "timestamp": "2026-03-11T14:41:08.594133",
+      "file_size_kb": 510.48
+    },
+    {
+      "filename": "cardiff_20260311_144705.png",
+      "timestamp": "2026-03-11T14:47:05.841237",
+      "file_size_kb": 500.96
+    },
+    {
+      "filename": "cardiff_20260311_145304.png",
+      "timestamp": "2026-03-11T14:53:04.758309",
+      "file_size_kb": 552.31
+    },
+    {
+      "filename": "cardiff_20260312_164111.png",
+      "timestamp": "2026-03-12T16:41:11.085971",
+      "file_size_kb": 390.24
+    },
+    {
+      "filename": "cardiff_20260312_164555.png",
+      "timestamp": "2026-03-12T16:45:55.635361",
+      "file_size_kb": 478.66
+    },
+    {
+      "filename": "cardiff_20260312_165153.png",
+      "timestamp": "2026-03-12T16:51:53.728002",
+      "file_size_kb": 478.64
+    },
+    {
+      "filename": "cardiff_20260312_165752.png",
+      "timestamp": "2026-03-12T16:57:52.865692",
+      "file_size_kb": 452.49
+    },
+    {
+      "filename": "cardiff_20260312_170240.png",
+      "timestamp": "2026-03-12T17:02:40.332682",
+      "file_size_kb": 455.67
+    },
+    {
+      "filename": "cardiff_20260312_170834.png",
+      "timestamp": "2026-03-12T17:08:34.587269",
+      "file_size_kb": 460.88
+    },
+    {
+      "filename": "cardiff_20260312_171430.png",
+      "timestamp": "2026-03-12T17:14:30.340578",
+      "file_size_kb": 465.64
+    },
+    {
+      "filename": "cardiff_20260312_171915.png",
+      "timestamp": "2026-03-12T17:19:15.678382",
+      "file_size_kb": 481.06
+    },
+    {
+      "filename": "cardiff_20260312_172402.png",
+      "timestamp": "2026-03-12T17:24:02.545556",
+      "file_size_kb": 453.17
+    },
+    {
+      "filename": "cardiff_20260312_173008.png",
+      "timestamp": "2026-03-12T17:30:08.870359",
+      "file_size_kb": 426.25
+    },
+    {
+      "filename": "cardiff_20260312_173456.png",
+      "timestamp": "2026-03-12T17:34:56.056847",
+      "file_size_kb": 431.63
+    },
+    {
+      "filename": "cardiff_20260312_173943.png",
+      "timestamp": "2026-03-12T17:39:43.321557",
+      "file_size_kb": 443.08
+    },
+    {
+      "filename": "cardiff_20260312_174537.png",
+      "timestamp": "2026-03-12T17:45:37.563694",
+      "file_size_kb": 481.43
+    },
+    {
+      "filename": "cardiff_20260312_175027.png",
+      "timestamp": "2026-03-12T17:50:27.268100",
+      "file_size_kb": 456.75
+    },
+    {
+      "filename": "cardiff_20260312_175523.png",
+      "timestamp": "2026-03-12T17:55:23.486492",
+      "file_size_kb": 454.32
+    },
+    {
+      "filename": "cardiff_20260312_180118.png",
+      "timestamp": "2026-03-12T18:01:18.008070",
+      "file_size_kb": 445.54
+    },
+    {
+      "filename": "cardiff_20260312_180604.png",
+      "timestamp": "2026-03-12T18:06:04.559635",
+      "file_size_kb": 438.29
+    },
+    {
+      "filename": "cardiff_20260312_181051.png",
+      "timestamp": "2026-03-12T18:10:51.429822",
+      "file_size_kb": 448.19
+    },
+    {
+      "filename": "cardiff_20260312_181645.png",
+      "timestamp": "2026-03-12T18:16:45.421970",
+      "file_size_kb": 438.38
+    },
+    {
+      "filename": "cardiff_20260312_182132.png",
+      "timestamp": "2026-03-12T18:21:32.043339",
+      "file_size_kb": 443.71
+    },
+    {
+      "filename": "cardiff_20260312_182617.png",
+      "timestamp": "2026-03-12T18:26:17.614999",
+      "file_size_kb": 443.49
+    },
+    {
+      "filename": "cardiff_20260312_183212.png",
+      "timestamp": "2026-03-12T18:32:12.221128",
+      "file_size_kb": 446.85
+    },
+    {
+      "filename": "cardiff_20260312_183658.png",
+      "timestamp": "2026-03-12T18:36:58.592211",
+      "file_size_kb": 459.57
+    },
+    {
+      "filename": "cardiff_20260312_184146.png",
+      "timestamp": "2026-03-12T18:41:46.630607",
+      "file_size_kb": 444.76
+    },
+    {
+      "filename": "cardiff_20260312_184740.png",
+      "timestamp": "2026-03-12T18:47:40.231756",
+      "file_size_kb": 466.89
+    },
+    {
+      "filename": "cardiff_20260312_185227.png",
+      "timestamp": "2026-03-12T18:52:27.085674",
+      "file_size_kb": 446.49
+    },
+    {
+      "filename": "cardiff_20260312_185714.png",
+      "timestamp": "2026-03-12T18:57:14.523613",
+      "file_size_kb": 456.31
+    },
+    {
+      "filename": "cardiff_20260312_190309.png",
+      "timestamp": "2026-03-12T19:03:09.709154",
+      "file_size_kb": 443.93
+    },
+    {
+      "filename": "cardiff_20260312_191318.png",
+      "timestamp": "2026-03-12T19:13:18.046903",
+      "file_size_kb": 435.38
+    },
+    {
+      "filename": "cardiff_20260312_191923.png",
+      "timestamp": "2026-03-12T19:19:23.237184",
+      "file_size_kb": 439.76
+    },
+    {
+      "filename": "cardiff_20260312_192421.png",
+      "timestamp": "2026-03-12T19:24:21.373534",
+      "file_size_kb": 445.73
+    },
+    {
+      "filename": "cardiff_20260312_192938.png",
+      "timestamp": "2026-03-12T19:29:38.513180",
+      "file_size_kb": 444.43
+    },
+    {
+      "filename": "cardiff_20260312_193553.png",
+      "timestamp": "2026-03-12T19:35:53.175213",
+      "file_size_kb": 456.53
+    },
+    {
+      "filename": "cardiff_20260312_194041.png",
+      "timestamp": "2026-03-12T19:40:41.486550",
+      "file_size_kb": 447.63
+    },
+    {
+      "filename": "cardiff_20260312_194529.png",
+      "timestamp": "2026-03-12T19:45:29.156839",
+      "file_size_kb": 463.46
+    },
+    {
+      "filename": "cardiff_20260312_195015.png",
+      "timestamp": "2026-03-12T19:50:15.693493",
+      "file_size_kb": 437.09
+    },
+    {
+      "filename": "cardiff_20260312_195502.png",
+      "timestamp": "2026-03-12T19:55:02.893573",
+      "file_size_kb": 443.28
+    },
+    {
+      "filename": "cardiff_20260312_200057.png",
+      "timestamp": "2026-03-12T20:00:57.888078",
+      "file_size_kb": 446.05
+    },
+    {
+      "filename": "cardiff_20260312_200651.png",
+      "timestamp": "2026-03-12T20:06:51.934724",
+      "file_size_kb": 461.52
+    },
+    {
+      "filename": "cardiff_20260312_201139.png",
+      "timestamp": "2026-03-12T20:11:39.781445",
+      "file_size_kb": 437.89
+    },
+    {
+      "filename": "cardiff_20260312_201626.png",
+      "timestamp": "2026-03-12T20:16:26.463656",
+      "file_size_kb": 437.16
+    },
+    {
+      "filename": "cardiff_20260312_202219.png",
+      "timestamp": "2026-03-12T20:22:19.626720",
+      "file_size_kb": 447.31
+    },
+    {
+      "filename": "cardiff_20260312_202706.png",
+      "timestamp": "2026-03-12T20:27:06.163513",
+      "file_size_kb": 439.98
+    },
+    {
+      "filename": "cardiff_20260312_203151.png",
+      "timestamp": "2026-03-12T20:31:51.697054",
+      "file_size_kb": 417.46
+    },
+    {
+      "filename": "cardiff_20260312_203639.png",
+      "timestamp": "2026-03-12T20:36:39.375044",
+      "file_size_kb": 423.71
+    },
+    {
+      "filename": "cardiff_20260312_204126.png",
+      "timestamp": "2026-03-12T20:41:26.261830",
+      "file_size_kb": 441.63
+    },
+    {
+      "filename": "cardiff_20260312_204719.png",
+      "timestamp": "2026-03-12T20:47:19.227074",
+      "file_size_kb": 438.05
+    },
+    {
+      "filename": "cardiff_20260312_205205.png",
+      "timestamp": "2026-03-12T20:52:05.943654",
+      "file_size_kb": 440.03
+    },
+    {
+      "filename": "cardiff_20260312_205708.png",
+      "timestamp": "2026-03-12T20:57:08.289649",
+      "file_size_kb": 449.31
+    },
+    {
+      "filename": "cardiff_20260312_210154.png",
+      "timestamp": "2026-03-12T21:01:54.108380",
+      "file_size_kb": 436.15
+    },
+    {
+      "filename": "cardiff_20260312_210639.png",
+      "timestamp": "2026-03-12T21:06:39.875927",
+      "file_size_kb": 442.79
+    },
+    {
+      "filename": "cardiff_20260312_211232.png",
+      "timestamp": "2026-03-12T21:12:32.366066",
+      "file_size_kb": 453.47
+    },
+    {
+      "filename": "cardiff_20260312_211719.png",
+      "timestamp": "2026-03-12T21:17:19.137949",
+      "file_size_kb": 436.7
+    },
+    {
+      "filename": "cardiff_20260312_212204.png",
+      "timestamp": "2026-03-12T21:22:04.227962",
+      "file_size_kb": 430.94
+    },
+    {
+      "filename": "cardiff_20260312_212757.png",
+      "timestamp": "2026-03-12T21:27:57.932287",
+      "file_size_kb": 435.4
+    },
+    {
+      "filename": "cardiff_20260312_213345.png",
+      "timestamp": "2026-03-12T21:33:45.689113",
+      "file_size_kb": 475.58
+    },
+    {
+      "filename": "cardiff_20260312_213831.png",
+      "timestamp": "2026-03-12T21:38:31.411411",
+      "file_size_kb": 439.57
+    },
+    {
+      "filename": "cardiff_20260312_214316.png",
+      "timestamp": "2026-03-12T21:43:16.679585",
+      "file_size_kb": 440.04
+    },
+    {
+      "filename": "cardiff_20260312_214803.png",
+      "timestamp": "2026-03-12T21:48:03.280225",
+      "file_size_kb": 442.7
+    },
+    {
+      "filename": "cardiff_20260312_215248.png",
+      "timestamp": "2026-03-12T21:52:48.963865",
+      "file_size_kb": 456.63
+    },
+    {
+      "filename": "cardiff_20260312_215953.png",
+      "timestamp": "2026-03-12T21:59:53.662263",
+      "file_size_kb": 439.3
+    },
+    {
+      "filename": "cardiff_20260312_220547.png",
+      "timestamp": "2026-03-12T22:05:47.432456",
+      "file_size_kb": 462.82
+    },
+    {
+      "filename": "cardiff_20260312_221033.png",
+      "timestamp": "2026-03-12T22:10:33.107425",
+      "file_size_kb": 435.86
+    },
+    {
+      "filename": "cardiff_20260312_221736.png",
+      "timestamp": "2026-03-12T22:17:36.286001",
+      "file_size_kb": 434.52
+    },
+    {
+      "filename": "cardiff_20260312_222329.png",
+      "timestamp": "2026-03-12T22:23:29.108873",
+      "file_size_kb": 436.59
+    },
+    {
+      "filename": "cardiff_20260312_222827.png",
+      "timestamp": "2026-03-12T22:28:27.496048",
+      "file_size_kb": 444.72
+    },
+    {
+      "filename": "cardiff_20260312_223313.png",
+      "timestamp": "2026-03-12T22:33:13.722850",
+      "file_size_kb": 441.29
+    },
+    {
+      "filename": "cardiff_20260312_223810.png",
+      "timestamp": "2026-03-12T22:38:10.139352",
+      "file_size_kb": 438.48
+    },
+    {
+      "filename": "cardiff_20260312_224257.png",
+      "timestamp": "2026-03-12T22:42:57.026772",
+      "file_size_kb": 451.44
+    },
+    {
+      "filename": "cardiff_20260312_224742.png",
+      "timestamp": "2026-03-12T22:47:42.786214",
+      "file_size_kb": 444.99
+    },
+    {
+      "filename": "cardiff_20260312_225335.png",
+      "timestamp": "2026-03-12T22:53:35.023900",
+      "file_size_kb": 434.79
+    },
+    {
+      "filename": "cardiff_20260312_225820.png",
+      "timestamp": "2026-03-12T22:58:20.688630",
+      "file_size_kb": 460.98
+    },
+    {
+      "filename": "cardiff_20260312_230305.png",
+      "timestamp": "2026-03-12T23:03:05.863286",
+      "file_size_kb": 439.7
+    },
+    {
+      "filename": "cardiff_20260312_230945.png",
+      "timestamp": "2026-03-12T23:09:45.607389",
+      "file_size_kb": 435.76
+    },
+    {
+      "filename": "cardiff_20260312_231431.png",
+      "timestamp": "2026-03-12T23:14:31.133698",
+      "file_size_kb": 432.68
+    },
+    {
+      "filename": "cardiff_20260313_091140.png",
+      "timestamp": "2026-03-13T09:11:40.478969",
+      "file_size_kb": 566.52
+    },
+    {
+      "filename": "cardiff_20260313_091721.png",
+      "timestamp": "2026-03-13T09:17:21.293531",
+      "file_size_kb": 545.92
+    },
+    {
+      "filename": "cardiff_20260313_092324.png",
+      "timestamp": "2026-03-13T09:23:24.065112",
+      "file_size_kb": 573.27
+    },
+    {
+      "filename": "cardiff_20260313_092924.png",
+      "timestamp": "2026-03-13T09:29:24.523503",
+      "file_size_kb": 570.98
+    },
+    {
+      "filename": "cardiff_20260313_093414.png",
+      "timestamp": "2026-03-13T09:34:14.476591",
+      "file_size_kb": 573.23
+    },
+    {
+      "filename": "cardiff_20260313_094014.png",
+      "timestamp": "2026-03-13T09:40:14.805280",
+      "file_size_kb": 577.88
+    },
+    {
+      "filename": "cardiff_20260313_094614.png",
+      "timestamp": "2026-03-13T09:46:14.929832",
+      "file_size_kb": 582.26
+    },
+    {
+      "filename": "cardiff_20260313_095212.png",
+      "timestamp": "2026-03-13T09:52:12.344588",
+      "file_size_kb": 589.44
+    },
+    {
+      "filename": "cardiff_20260313_095834.png",
+      "timestamp": "2026-03-13T09:58:34.292402",
+      "file_size_kb": 583.77
+    },
+    {
+      "filename": "cardiff_20260313_100324.png",
+      "timestamp": "2026-03-13T10:03:24.748863",
+      "file_size_kb": 555.21
+    },
+    {
+      "filename": "cardiff_20260313_100923.png",
+      "timestamp": "2026-03-13T10:09:23.927703",
+      "file_size_kb": 576.02
+    },
+    {
+      "filename": "cardiff_20260313_101533.png",
+      "timestamp": "2026-03-13T10:15:33.417435",
+      "file_size_kb": 556.8
+    },
+    {
+      "filename": "cardiff_20260313_102030.png",
+      "timestamp": "2026-03-13T10:20:30.363573",
+      "file_size_kb": 561.86
+    },
+    {
+      "filename": "cardiff_20260313_102629.png",
+      "timestamp": "2026-03-13T10:26:29.132944",
+      "file_size_kb": 561.46
+    },
+    {
+      "filename": "cardiff_20260313_103229.png",
+      "timestamp": "2026-03-13T10:32:29.772306",
+      "file_size_kb": 539.92
+    },
+    {
+      "filename": "cardiff_20260313_103828.png",
+      "timestamp": "2026-03-13T10:38:28.243579",
+      "file_size_kb": 544.23
+    },
+    {
+      "filename": "cardiff_20260313_104318.png",
+      "timestamp": "2026-03-13T10:43:18.567845",
+      "file_size_kb": 525.33
+    },
+    {
+      "filename": "cardiff_20260313_104918.png",
+      "timestamp": "2026-03-13T10:49:18.230379",
+      "file_size_kb": 541.37
+    },
+    {
+      "filename": "cardiff_20260313_105516.png",
+      "timestamp": "2026-03-13T10:55:16.731045",
+      "file_size_kb": 561.35
+    },
+    {
+      "filename": "cardiff_20260313_110115.png",
+      "timestamp": "2026-03-13T11:01:15.114891",
+      "file_size_kb": 562.05
+    },
+    {
+      "filename": "cardiff_20260313_110604.png",
+      "timestamp": "2026-03-13T11:06:04.622583",
+      "file_size_kb": 559.27
+    },
+    {
+      "filename": "cardiff_20260313_111203.png",
+      "timestamp": "2026-03-13T11:12:03.662363",
+      "file_size_kb": 526.96
+    },
+    {
+      "filename": "cardiff_20260313_111802.png",
+      "timestamp": "2026-03-13T11:18:02.680950",
+      "file_size_kb": 560.71
+    },
+    {
+      "filename": "cardiff_20260313_112251.png",
+      "timestamp": "2026-03-13T11:22:51.918063",
+      "file_size_kb": 566.98
+    },
+    {
+      "filename": "cardiff_20260313_112741.png",
+      "timestamp": "2026-03-13T11:27:41.550099",
+      "file_size_kb": 539.77
+    },
+    {
+      "filename": "cardiff_20260313_113339.png",
+      "timestamp": "2026-03-13T11:33:39.650065",
+      "file_size_kb": 552.82
+    },
+    {
+      "filename": "cardiff_20260313_113937.png",
+      "timestamp": "2026-03-13T11:39:37.074432",
+      "file_size_kb": 552.88
+    },
+    {
+      "filename": "cardiff_20260313_114427.png",
+      "timestamp": "2026-03-13T11:44:27.137154",
+      "file_size_kb": 515.54
+    },
+    {
+      "filename": "cardiff_20260313_115024.png",
+      "timestamp": "2026-03-13T11:50:24.281750",
+      "file_size_kb": 546.57
+    },
+    {
+      "filename": "cardiff_20260313_115621.png",
+      "timestamp": "2026-03-13T11:56:21.074969",
+      "file_size_kb": 548.14
+    },
+    {
+      "filename": "cardiff_20260313_120216.png",
+      "timestamp": "2026-03-13T12:02:16.710173",
+      "file_size_kb": 527.19
+    },
+    {
+      "filename": "cardiff_20260313_120706.png",
+      "timestamp": "2026-03-13T12:07:06.018213",
+      "file_size_kb": 542.43
+    },
+    {
+      "filename": "cardiff_20260313_121307.png",
+      "timestamp": "2026-03-13T12:13:07.024757",
+      "file_size_kb": 507.21
+    },
+    {
+      "filename": "cardiff_20260313_121906.png",
+      "timestamp": "2026-03-13T12:19:06.484256",
+      "file_size_kb": 524.72
+    },
+    {
+      "filename": "cardiff_20260313_122507.png",
+      "timestamp": "2026-03-13T12:25:07.781917",
+      "file_size_kb": 486.17
+    },
+    {
+      "filename": "cardiff_20260313_123001.png",
+      "timestamp": "2026-03-13T12:30:01.327919",
+      "file_size_kb": 537.34
+    },
+    {
+      "filename": "cardiff_20260313_123602.png",
+      "timestamp": "2026-03-13T12:36:02.984917",
+      "file_size_kb": 516.66
+    },
+    {
+      "filename": "cardiff_20260313_124201.png",
+      "timestamp": "2026-03-13T12:42:01.006022",
+      "file_size_kb": 533.32
+    },
+    {
+      "filename": "cardiff_20260313_124759.png",
+      "timestamp": "2026-03-13T12:47:59.536570",
+      "file_size_kb": 539.51
+    },
+    {
+      "filename": "cardiff_20260313_125248.png",
+      "timestamp": "2026-03-13T12:52:48.580569",
+      "file_size_kb": 513.34
+    },
+    {
+      "filename": "cardiff_20260313_125843.png",
+      "timestamp": "2026-03-13T12:58:43.396633",
+      "file_size_kb": 490.58
+    },
+    {
+      "filename": "cardiff_20260313_130330.png",
+      "timestamp": "2026-03-13T13:03:30.748281",
+      "file_size_kb": 526.03
+    },
+    {
+      "filename": "cardiff_20260313_130815.png",
+      "timestamp": "2026-03-13T13:08:15.797005",
+      "file_size_kb": 504.62
+    },
+    {
+      "filename": "cardiff_20260313_131409.png",
+      "timestamp": "2026-03-13T13:14:09.346016",
+      "file_size_kb": 515.19
+    },
+    {
+      "filename": "cardiff_20260313_132003.png",
+      "timestamp": "2026-03-13T13:20:03.883184",
+      "file_size_kb": 527.62
+    },
+    {
+      "filename": "cardiff_20260313_132556.png",
+      "timestamp": "2026-03-13T13:25:56.684176",
+      "file_size_kb": 522.54
+    },
+    {
+      "filename": "cardiff_20260313_133044.png",
+      "timestamp": "2026-03-13T13:30:44.265905",
+      "file_size_kb": 540.24
+    },
+    {
+      "filename": "cardiff_20260313_133637.png",
+      "timestamp": "2026-03-13T13:36:37.904097",
+      "file_size_kb": 535.47
+    },
+    {
+      "filename": "cardiff_20260313_134230.png",
+      "timestamp": "2026-03-13T13:42:30.862167",
+      "file_size_kb": 566.19
+    },
+    {
+      "filename": "cardiff_20260313_134824.png",
+      "timestamp": "2026-03-13T13:48:24.902944",
+      "file_size_kb": 523.91
+    },
+    {
+      "filename": "cardiff_20260313_135311.png",
+      "timestamp": "2026-03-13T13:53:11.679453",
+      "file_size_kb": 494.98
+    },
+    {
+      "filename": "cardiff_20260313_135916.png",
+      "timestamp": "2026-03-13T13:59:16.490358",
+      "file_size_kb": 497.02
+    },
+    {
+      "filename": "cardiff_20260313_140510.png",
+      "timestamp": "2026-03-13T14:05:10.274884",
+      "file_size_kb": 505.88
+    },
+    {
+      "filename": "cardiff_20260313_140956.png",
+      "timestamp": "2026-03-13T14:09:56.358905",
+      "file_size_kb": 536.57
+    },
+    {
+      "filename": "cardiff_20260313_141443.png",
+      "timestamp": "2026-03-13T14:14:43.447586",
+      "file_size_kb": 537.35
+    },
+    {
+      "filename": "cardiff_20260313_142036.png",
+      "timestamp": "2026-03-13T14:20:36.772911",
+      "file_size_kb": 496.96
+    },
+    {
+      "filename": "cardiff_20260313_142632.png",
+      "timestamp": "2026-03-13T14:26:32.131926",
+      "file_size_kb": 504.9
+    },
+    {
+      "filename": "cardiff_20260313_143118.png",
+      "timestamp": "2026-03-13T14:31:18.413039",
+      "file_size_kb": 491.59
+    },
+    {
+      "filename": "cardiff_20260313_143711.png",
+      "timestamp": "2026-03-13T14:37:11.784909",
+      "file_size_kb": 499.63
+    },
+    {
+      "filename": "cardiff_20260313_144305.png",
+      "timestamp": "2026-03-13T14:43:05.621651",
+      "file_size_kb": 509.46
+    },
+    {
+      "filename": "cardiff_20260313_144922.png",
+      "timestamp": "2026-03-13T14:49:22.549285",
+      "file_size_kb": 466.0
+    },
+    {
+      "filename": "cardiff_20260313_145419.png",
+      "timestamp": "2026-03-13T14:54:19.240114",
+      "file_size_kb": 461.27
+    },
+    {
+      "filename": "cardiff_20260313_145905.png",
+      "timestamp": "2026-03-13T14:59:05.359293",
+      "file_size_kb": 475.6
+    },
+    {
+      "filename": "cardiff_20260313_150352.png",
+      "timestamp": "2026-03-13T15:03:52.821006",
+      "file_size_kb": 454.94
+    },
+    {
+      "filename": "cardiff_20260313_150838.png",
+      "timestamp": "2026-03-13T15:08:38.682029",
+      "file_size_kb": 431.26
+    },
+    {
+      "filename": "cardiff_20260313_151433.png",
+      "timestamp": "2026-03-13T15:14:33.783907",
+      "file_size_kb": 410.72
+    },
+    {
+      "filename": "cardiff_20260313_152027.png",
+      "timestamp": "2026-03-13T15:20:27.311320",
+      "file_size_kb": 411.76
+    },
+    {
+      "filename": "cardiff_20260313_152513.png",
+      "timestamp": "2026-03-13T15:25:13.557572",
+      "file_size_kb": 426.39
+    },
+    {
+      "filename": "cardiff_20260313_153000.png",
+      "timestamp": "2026-03-13T15:30:00.114398",
+      "file_size_kb": 429.17
+    },
+    {
+      "filename": "cardiff_20260313_153447.png",
+      "timestamp": "2026-03-13T15:34:47.402653",
+      "file_size_kb": 420.6
+    },
+    {
+      "filename": "cardiff_20260313_153935.png",
+      "timestamp": "2026-03-13T15:39:35.392487",
+      "file_size_kb": 411.42
     }
   ]
 }

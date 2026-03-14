@@ -11,3 +11,4 @@ __pycache__/
 "*.pt" 
 "*.pth" 
 "data/final/weights_model/" 
+

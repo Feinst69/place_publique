@@ -21,7 +21,7 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '
 SRC_DIR = os.path.join(BASE_DIR, 'src')
 FRONTEND_DIR = os.path.join(SRC_DIR, 'frontend')
 MODEL_PERSON_PATH = os.path.join(BASE_DIR, "data/final/weights_model/yolo11n.pt")
-MODEL_CAR_PATH    = os.path.join(BASE_DIR, "data/final/weights_model/yolo11s.pt")
+MODEL_CAR_PATH    = os.path.join(BASE_DIR, "data/final/weights_model/best_car.pt")
 IMAGE_OUT_DIR = os.path.join(BASE_DIR, "data/final/image_annoted")
 JSON_OUT_DIR = os.path.join(BASE_DIR, "data/final/yolo_json")
 
@@ -51,7 +51,7 @@ db_class = DetectionClassDatabase()
 
 # Chargement des deux modeles YOLO
 model_person = YOLO(MODEL_PERSON_PATH)  # yolo11n - detection personnes
-model_car    = YOLO(MODEL_CAR_PATH)     # yolo11s - detection vehicules
+model_car    = YOLO(MODEL_CAR_PATH)     # best_car - detection vehicules
 
 # Mapping dossier -> label affichable
 CAMERA_LABELS = {
