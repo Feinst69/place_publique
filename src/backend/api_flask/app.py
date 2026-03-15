@@ -20,7 +20,7 @@ from database.db_detection_class import DetectionClassDatabase
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 SRC_DIR = os.path.join(BASE_DIR, 'src')
 FRONTEND_DIR = os.path.join(SRC_DIR, 'frontend')
-MODEL_PERSON_PATH = os.path.join(BASE_DIR, "data/final/weights_model/yolo11n.pt")
+MODEL_PERSON_PATH = os.path.join(BASE_DIR, "data/final/weights_model/best_people.pt")
 MODEL_CAR_PATH    = os.path.join(BASE_DIR, "data/final/weights_model/best_car.pt")
 IMAGE_OUT_DIR = os.path.join(BASE_DIR, "data/final/image_annoted")
 JSON_OUT_DIR = os.path.join(BASE_DIR, "data/final/yolo_json")
@@ -211,6 +211,13 @@ def stats_page():
 def get_image(filename):
     return send_file(os.path.join(IMAGE_OUT_DIR, filename))
 
+def normalize_image_url(value):
+    """Normalize DB image value to the public Flask route /image/<filename>."""
+    if not value:
+        return value
+    filename = value.split("/")[-1]
+    return f"/image/{filename}"
+
 @app.route("/api/detections")
 def get_detections():
     """Endpoint pour récupérer toutes les détections"""
@@ -221,6 +228,7 @@ def get_detections():
         filename = det.get('image_url', '').split('/')[-1]
         classes = db_class.get_class_by_image(filename)
         det['class_counts'] = {c['class']: c['detection_count'] for c in classes}
+        det['image_url'] = normalize_image_url(det.get('image_url'))
     return jsonify(detections)
 
 @app.route("/api/detections/<image_id>")
@@ -231,6 +239,7 @@ def get_detection(image_id):
         # Récupérer aussi les classes
         classes = db_class.get_class_by_image(image_id)
         detection['classes'] = classes
+        detection['image_url'] = normalize_image_url(detection.get('image_url'))
         return jsonify(detection)
     return jsonify({"error": "Detection not found"}), 404
 
@@ -269,6 +278,8 @@ def get_db_stats_endpoint():
 def get_detections_by_date(date):
     """Endpoint pour récupérer les détections par date (YYYY-MM-DD)"""
     detections = db_main.get_detections_by_date(date)
+    for det in detections:
+        det['image_url'] = normalize_image_url(det.get('image_url'))
     return jsonify(detections)
 
 @app.route("/api/detections/class/<class_name>")

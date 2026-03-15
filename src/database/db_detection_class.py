@@ -22,15 +22,16 @@ class DetectionClassDatabase:
         self.create_tables()
     
     def connect(self):
-        """Établit la connexion à la base de données."""
-        self.conn = sqlite3.connect(self.db_path)
-        self.conn.row_factory = sqlite3.Row
-        return self.conn
+        """Établit une connexion SQLite locale à la base de données."""
+        conn = sqlite3.connect(self.db_path, check_same_thread=False)
+        conn.row_factory = sqlite3.Row
+        return conn
     
-    def close(self):
-        """Ferme la connexion à la base de données."""
-        if self.conn:
-            self.conn.close()
+    def close(self, conn=None):
+        """Ferme une connexion SQLite locale (ou la connexion legacy si fournie)."""
+        target = conn if conn is not None else self.conn
+        if target:
+            target.close()
     
     def create_tables(self):
         """Crée la table des classes détectées si elle n'existe pas."""
@@ -55,7 +56,7 @@ class DetectionClassDatabase:
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_class_name ON detection_class(class)")
         
         conn.commit()
-        self.close()
+        self.close(conn)
     
     def insert_detection_class(self, image_url: str, class_name: str, confidence: float, detection_count: int) -> bool:
         """
@@ -91,7 +92,7 @@ class DetectionClassDatabase:
             conn.rollback()
             return False
         finally:
-            self.close()
+            self.close(conn)
     
     def insert_batch_class(self, image_url: str, detections: List[Dict]) -> bool:
         """
@@ -132,7 +133,7 @@ class DetectionClassDatabase:
             conn.rollback()
             return False
         finally:
-            self.close()
+            self.close(conn)
     
     def get_class_by_image(self, image_url: str) -> List[Dict]:
         """
@@ -159,7 +160,7 @@ class DetectionClassDatabase:
             return classes
             
         finally:
-            self.close()
+            self.close(conn)
     
     def get_detections_by_class(self, class_name: str, limit: int = None) -> List[Dict]:
         """
@@ -196,7 +197,7 @@ class DetectionClassDatabase:
             return detections
             
         finally:
-            self.close()
+            self.close(conn)
     
     def get_all_detections(self) -> List[Dict]:
         """
@@ -219,7 +220,7 @@ class DetectionClassDatabase:
             return detections
             
         finally:
-            self.close()
+            self.close(conn)
     
     def get_class_statistics(self) -> Dict:
         """
@@ -250,7 +251,7 @@ class DetectionClassDatabase:
             return stats
             
         finally:
-            self.close()
+            self.close(conn)
 
     def get_class_trend_per_day(self) -> List[Dict]:
         """Total d'objets détectés par classe et par jour."""
@@ -267,7 +268,7 @@ class DetectionClassDatabase:
             """)
             return [dict(row) for row in cursor.fetchall()]
         finally:
-            self.close()
+            self.close(conn)
 
     def get_per_frame_counts(self) -> List[Dict]:
         """Retourne pour chaque image le nombre de person et de car détectés."""
@@ -286,7 +287,7 @@ class DetectionClassDatabase:
             """)
             return [dict(row) for row in cursor.fetchall()]
         finally:
-            self.close()
+            self.close(conn)
 
 if __name__ == "__main__":
     db = DetectionClassDatabase()

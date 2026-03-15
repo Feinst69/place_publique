@@ -10,22 +10,35 @@ from pathlib import Path
 import time
 import schedule
 import json
+import os
 
 def setup_driver():
-    """Configure le navigateur Chrome en mode headless"""
+    """Configure Chrome headless (local + Docker)."""
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Mode sans interface
+
+    # Selenium/Chrome flags stables in CI/containers
+    chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--mute-audio")
-    
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+
     # Pour éviter la détection de bot
     chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-    
-    driver = webdriver.Chrome(options=chrome_options)
-    return driver
+
+    # Docker-friendly binary path if provided
+    chrome_bin = os.environ.get("CHROME_BIN")
+    if chrome_bin:
+        chrome_options.binary_location = chrome_bin
+
+    chrome_driver_path = os.environ.get("CHROMEDRIVER_PATH")
+    if chrome_driver_path:
+        service = Service(chrome_driver_path)
+        return webdriver.Chrome(service=service, options=chrome_options)
+
+    return webdriver.Chrome(options=chrome_options)
 
 def load_metadata(metadata_file):
     """Charge le fichier JSON de métadonnées"""

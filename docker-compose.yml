@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   place_publique:
     build:
@@ -11,10 +9,30 @@ services:
       - CHROME_BIN=/usr/bin/chromium
       - CHROMEDRIVER_PATH=/usr/bin/chromedriver
     ports:
-      - "5000:5000"
+      - "${HOST_PORT:-5000}:5000"
     volumes:
       - ./data:/app/data
       - ./runs:/app/runs
       - ./mlruns:/app/mlruns
     shm_size: "1gb"
     restart: unless-stopped
+
+  place_publique_api_only:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: place_publique_api_only
+    command: ["python", "src/backend/pipeline/run_all_wsl.py", "--no-scraping"]
+    environment:
+      - PORT=5000
+      - CHROME_BIN=/usr/bin/chromium
+      - CHROMEDRIVER_PATH=/usr/bin/chromedriver
+    ports:
+      - "${HOST_PORT_API_ONLY:-5001}:5000"
+    volumes:
+      - ./data:/app/data
+      - ./runs:/app/runs
+      - ./mlruns:/app/mlruns
+    shm_size: "1gb"
+    restart: unless-stopped
+    profiles: ["api-only"]

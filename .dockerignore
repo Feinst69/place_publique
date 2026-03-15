@@ -7,3 +7,12 @@ venv_yolo
 .venv
 mlruns
 runs
+
+# Large local artifacts not needed at image build time
+data
+notebooks
+Place_publique-1
+Place_publique-4
+models
+*.pdf
+*.rar

@@ -23,15 +23,16 @@ class DetectionMainDatabase:
         self.create_tables()
     
     def connect(self):
-        """Établit la connexion à la base de données."""
-        self.conn = sqlite3.connect(self.db_path)
-        self.conn.row_factory = sqlite3.Row
-        return self.conn
+        """Établit une connexion SQLite locale à la base de données."""
+        conn = sqlite3.connect(self.db_path, check_same_thread=False)
+        conn.row_factory = sqlite3.Row
+        return conn
     
-    def close(self):
-        """Ferme la connexion à la base de données."""
-        if self.conn:
-            self.conn.close()
+    def close(self, conn=None):
+        """Ferme une connexion SQLite locale (ou la connexion legacy si fournie)."""
+        target = conn if conn is not None else self.conn
+        if target:
+            target.close()
     
     def create_tables(self):
         """Crée la table principale des détections si elle n'existe pas."""
@@ -56,7 +57,7 @@ class DetectionMainDatabase:
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_main_datetime ON detection_main(datetime)")
         
         conn.commit()
-        self.close()
+        self.close(conn)
     
     def insert_detection(self, image_url: str, date: str, time: str, datetime_str: str, num_detections: int) -> bool:
         """
@@ -83,7 +84,7 @@ class DetectionMainDatabase:
             cursor.execute("SELECT COUNT(*) FROM detection_main WHERE image_url = ?", (image_filename,))
             if cursor.fetchone()[0] > 0:
                 print(f"Info: La détection '{image_filename}' existe déjà (doublon ignoré).")
-                self.close()
+                self.close(conn)
                 return False
             
             # Insertion dans la table detection_main avec juste le nom du fichier
@@ -100,7 +101,7 @@ class DetectionMainDatabase:
             conn.rollback()
             return False
         finally:
-            self.close()
+            self.close(conn)
     
     def get_all_detections(self, limit: int = None, offset: int = 0) -> List[Dict]:
         """
@@ -130,7 +131,7 @@ class DetectionMainDatabase:
             return detections
             
         finally:
-            self.close()
+            self.close(conn)
     
     def get_detection_by_url(self, image_url: str) -> Optional[Dict]:
         """
@@ -155,7 +156,7 @@ class DetectionMainDatabase:
             return dict(detection)
             
         finally:
-            self.close()
+            self.close(conn)
     
     def get_detections_by_date(self, date: str) -> List[Dict]:
         """
@@ -181,7 +182,7 @@ class DetectionMainDatabase:
             return detections
 
         finally:
-            self.close()
+            self.close(conn)
 
     def get_detections_per_day(self) -> List[Dict]:
         """Nombre d'images analysées et d'objets détectés par jour."""
@@ -198,7 +199,7 @@ class DetectionMainDatabase:
             """)
             return [dict(row) for row in cursor.fetchall()]
         finally:
-            self.close()
+            self.close(conn)
 
     def get_hourly_activity(self) -> List[Dict]:
         """Nombre d'analyses par heure de la journée (0-23)."""
@@ -215,7 +216,7 @@ class DetectionMainDatabase:
             """)
             return [dict(row) for row in cursor.fetchall()]
         finally:
-            self.close()
+            self.close(conn)
 
     def get_summary(self) -> Dict:
         """Résumé global : total images, objets, moyenne, max, première/dernière."""
@@ -234,7 +235,7 @@ class DetectionMainDatabase:
             row = cursor.fetchone()
             return dict(row) if row else {}
         finally:
-            self.close()
+            self.close(conn)
 
 if __name__ == "__main__":
     db = DetectionMainDatabase()
