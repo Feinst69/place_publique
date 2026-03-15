@@ -6,7 +6,7 @@ import json
 from flask import Flask, render_template, send_file, jsonify, request
 from flask_socketio import SocketIO
 from ultralytics import YOLO
-from watchdog.observers import Observer
+from watchdog.observers.polling import PollingObserver as Observer
 from watchdog.events import FileSystemEventHandler
 import sys
 import threading
@@ -24,10 +24,6 @@ MODEL_PERSON_PATH = os.path.join(BASE_DIR, "data/final/weights_model/yolo11n.pt"
 MODEL_CAR_PATH    = os.path.join(BASE_DIR, "data/final/weights_model/best_car.pt")
 IMAGE_OUT_DIR = os.path.join(BASE_DIR, "data/final/image_annoted")
 JSON_OUT_DIR = os.path.join(BASE_DIR, "data/final/yolo_json")
-
-# Classes COCO a detecter
-PERSON_CLASSES = [0]           # person
-CAR_CLASSES    = [2, 5, 7]    # car, bus, truck -> tous remappes en "car"
 
 # Surveillance des 5 webcams : Cardiff, Madrid, Rome (Trevi), Murcia, La Palma
 WATCH_DIRS = [
@@ -50,8 +46,31 @@ db_main = DetectionMainDatabase()
 db_class = DetectionClassDatabase()
 
 # Chargement des deux modeles YOLO
-model_person = YOLO(MODEL_PERSON_PATH)  # yolo11n - detection personnes
-model_car    = YOLO(MODEL_CAR_PATH)     # best_car - detection vehicules
+model_person = YOLO(MODEL_PERSON_PATH)
+model_car    = YOLO(MODEL_CAR_PATH)
+
+
+def resolve_class_ids(model, keywords):
+    """Retourne les IDs de classes dont le nom contient un des keywords."""
+    ids = []
+    for class_id, class_name in model.names.items():
+        name = str(class_name).lower().strip()
+        if any(keyword in name for keyword in keywords):
+            ids.append(int(class_id))
+    return sorted(set(ids))
+
+
+# Déduction auto des classes selon les noms internes des modèles
+# (utile quand les modèles ne sont pas COCO et n'ont pas les IDs standards)
+PERSON_CLASSES = resolve_class_ids(model_person, ["person", "people", "pedestrian"])
+CAR_CLASSES = resolve_class_ids(model_car, ["car", "cars", "vehicle", "truck", "bus"])
+
+# Si aucune classe n'est trouvée, on ne filtre pas (toutes classes du modèle)
+PERSON_CLASSES = PERSON_CLASSES if PERSON_CLASSES else None
+CAR_CLASSES = CAR_CLASSES if CAR_CLASSES else None
+
+print(f"Classes person utilisées: {PERSON_CLASSES} | names={model_person.names}")
+print(f"Classes car utilisées: {CAR_CLASSES} | names={model_car.names}")
 
 # Mapping dossier -> label affichable
 CAMERA_LABELS = {
@@ -267,7 +286,8 @@ if __name__ == "__main__":
         observer.schedule(event_handler, watch_dir, recursive=False)
         print(f"Surveillance: {watch_dir}")
     observer.start()
-    print(f"\nServeur Flask démarré sur http://0.0.0.0:5000")
+    port = int(os.environ.get("PORT", "5000"))
+    print(f"\nServeur Flask démarré sur http://0.0.0.0:{port}")
     print(f"DB Main: {db_main.db_path}")
     print(f"DB Class: {db_class.db_path}")
-    socketio.run(app, host="0.0.0.0", port=5000, debug=False, allow_unsafe_werkzeug=True)
+    socketio.run(app, host="0.0.0.0", port=port, debug=False, allow_unsafe_werkzeug=True)

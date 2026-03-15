@@ -22,7 +22,9 @@ SCRAPPING_TREVI   = BASE_DIR / "src" / "backend" / "scrapping" / "scrapping_trev
 SCRAPPING_MURCIA  = BASE_DIR / "src" / "backend" / "scrapping" / "scrapping_murcia.py"
 SCRAPPING_LAPALMA = BASE_DIR / "src" / "backend" / "scrapping" / "scrapping_lapalma.py"
 API_SCRIPT = BASE_DIR / "src" / "backend" / "api_flask" / "app.py"
-VENV_PYTHON = BASE_DIR / "venv_yolo" / "Scripts" / "python.exe"
+# VENV_PYTHON = BASE_DIR / "venv_yolo" / "Scripts" / "python.exe"
+VENV_PYTHON = Path(sys.executable)
+API_PORT = int(os.environ.get("PORT", "5000"))
 
 def check_scripts_exist():
     """Vérifier que les scripts existent"""
@@ -90,15 +92,42 @@ def launch_processes():
         print("   - Scrapping: Capture les images webcam")
         print("   - API Flask: Traite les images détectées")
         print("=" * 70)
-        print("\nAccès au dashboard: http://localhost:5000")
+        print(f"\nAccès au dashboard: http://localhost:{API_PORT}")
         print("Appuyez sur Ctrl+C pour arrêter tous les processus\n")
         
         # Garder les processus actifs
+        stopped_reported = set()
         while True:
             for name, process in processes:
-                if process.poll() is not None:
-                    # Le processus s'est arrêté
-                    print(f"\n{name} s'est arrêté de manière inattendue")
+                if process.poll() is None:
+                    continue
+
+                if name in stopped_reported:
+                    continue
+                stopped_reported.add(name)
+
+                exit_code = process.returncode
+                print(f"\n{name} s'est arrêté de manière inattendue (code={exit_code})")
+
+                # Afficher les derniers logs du processus arrêté
+                try:
+                    if process.stdout:
+                        remaining = process.stdout.read().strip()
+                        if remaining:
+                            print(f"--- Logs {name} ---")
+                            print(remaining)
+                            print(f"--- Fin logs {name} ---")
+                except Exception:
+                    pass
+
+                # Si l'API tombe, arrêter tout le système pour éviter un état incohérent
+                if name == "API Flask":
+                    print("Arrêt des autres processus car l'API est indisponible...")
+                    for other_name, other_process in processes:
+                        if other_process.poll() is None:
+                            other_process.terminate()
+                    sys.exit(1)
+
             time.sleep(1)
         
     except KeyboardInterrupt:
