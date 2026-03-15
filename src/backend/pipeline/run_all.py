@@ -76,13 +76,17 @@ def launch_processes():
         # Lancer l'API Flask
         print("\nLancement de l'API Flask...")
         print(f"   Commande: {VENV_PYTHON} {API_SCRIPT}")
+        child_env = os.environ.copy()
+        child_env["PORT"] = str(API_PORT)
+
         api_process = subprocess.Popen(
             [str(VENV_PYTHON), str(API_SCRIPT)],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
             bufsize=1,
-            cwd=str(BASE_DIR)
+            cwd=str(BASE_DIR),
+            env=child_env
         )
         processes.append(("API Flask", api_process))
         print(f"API Flask lancée (PID: {api_process.pid})")
