@@ -30,6 +30,17 @@
                     text-transform: uppercase; letter-spacing: 1px; }
         .chart-wrap { position: relative; height: 260px; }
 
+        .day-chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; max-height: 70vh; overflow-y: auto; padding-right: 6px; }
+        .day-chart-grid::-webkit-scrollbar { width: 8px; }
+        .day-chart-grid::-webkit-scrollbar-thumb { background: #2a4f84; border-radius: 8px; }
+        .day-chart-grid::-webkit-scrollbar-track { background: #102746; border-radius: 8px; }
+        .day-chart-card { background: #0f3460; border: 1px solid #1f4a7a; border-radius: 10px; padding: 10px; }
+        .day-chart-title { color: #aaa; font-size: 0.9em; margin: 0 0 8px; }
+        .day-chart-wrap { position: relative; height: 220px; }
+        .hourly-alerts { margin-bottom: 12px; display: grid; gap: 8px; }
+        .alert-item { background: #3a1a24; border: 1px solid #e94560; color: #ffd7df; border-radius: 8px; padding: 8px 10px; font-size: 0.9em; }
+        .alert-ok { background: #153226; border: 1px solid #2fbf71; color: #a6f0c8; border-radius: 8px; padding: 8px 10px; font-size: 0.9em; }
+
         /* Tableau classes */
         table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
         th { background: #0f3460; color: #e94560; padding: 10px; text-align: left; }
@@ -69,8 +80,9 @@
                 <div class="chart-wrap"><canvas id="chartPerDay"></canvas></div>
             </div>
             <div class="panel">
-                <h2>Person / Car par image</h2>
-                <div class="chart-wrap"><canvas id="chartPerFrame"></canvas></div>
+                <h2>Person / Car par jour (un graphe par date)</h2>
+                <div id="hourlyAlerts" class="hourly-alerts"></div>
+                <div id="perDayCharts" class="day-chart-grid"></div>
             </div>
         </div>
 
@@ -153,32 +165,152 @@ fetch('/api/db_stats')
              { label: 'Car',    data: trendFor('car'),    backgroundColor: '#e94560', borderRadius: 4 }]
         );
 
-        // --- Person / Car par frame (courbe) ---
+        // --- Person / Car par heure, pour chaque jour + moyenne globale + alerte heure courante ---
         const frames = data.per_frame || [];
-        const frameLabels = frames.map((f, i) => '#' + (i + 1));
-        new Chart(document.getElementById('chartPerFrame').getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: frameLabels,
-                datasets: [
-                    { label: 'Person', data: frames.map(f => f.person_count),
-                      borderColor: '#6c63ff', backgroundColor: 'rgba(108,99,255,0.15)',
-                      tension: 0.3, pointRadius: 3, fill: true },
-                    { label: 'Car', data: frames.map(f => f.car_count),
-                      borderColor: '#e94560', backgroundColor: 'rgba(233,69,96,0.15)',
-                      tension: 0.3, pointRadius: 3, fill: true }
-                ]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#aaa' } } },
-                scales: {
-                    x: { ticks: { color: '#aaa', maxTicksLimit: 20 }, grid: { color: '#0f3460' } },
-                    y: { ticks: { color: '#aaa' }, grid: { color: '#0f3460' }, beginAtZero: true }
-                }
+        const perDayChartsEl = document.getElementById('perDayCharts');
+        const alertsEl = document.getElementById('hourlyAlerts');
+        const byDayHour = {};
+
+        frames.forEach(f => {
+            const created = String(f.created_at || '');
+            const day = created.slice(0, 10) || 'inconnu';
+            const hourStr = created.length >= 13 ? created.slice(11, 13) : '00';
+            const hour = Number.parseInt(hourStr, 10);
+            if (!Number.isFinite(hour) || hour < 0 || hour > 23) return;
+
+            if (!byDayHour[day]) {
+                byDayHour[day] = Array.from({ length: 24 }, () => ({ person: 0, car: 0 }));
             }
+
+            byDayHour[day][hour].person += Number(f.person_count || 0);
+            byDayHour[day][hour].car += Number(f.car_count || 0);
         });
 
+        const totalFrames = frames.length;
+        const totalPersonAllFrames = frames.reduce((sum, f) => sum + Number(f.person_count || 0), 0);
+        const totalCarAllFrames = frames.reduce((sum, f) => sum + Number(f.car_count || 0), 0);
+
+        // Moyenne globale (toutes images confondues), utilisée pour tous les jours
+        const globalMeanPerson = totalFrames ? (totalPersonAllFrames / totalFrames) : 0;
+        const globalMeanCar = totalFrames ? (totalCarAllFrames / totalFrames) : 0;
+
+        const orderedDaysForHourly = Object.keys(byDayHour).sort();
+        const hourLabels = Array.from({ length: 24 }, (_, h) => `${String(h).padStart(2, '0')}h`);
+
+        if (orderedDaysForHourly.length === 0) {
+            alertsEl.innerHTML = '<div class="alert-ok">Aucune donnée horaire disponible.</div>';
+            perDayChartsEl.innerHTML = '<p style="color:#555;">Aucune donnée horaire disponible.</p>';
+        } else {
+            // Alerte uniquement pour l'heure actuelle
+            const now = new Date();
+            const currentHour = now.getHours();
+            const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+            if (byDayHour[today]) {
+                const currentPerson = byDayHour[today][currentHour].person;
+                const currentCar = byDayHour[today][currentHour].car;
+                const personExceeded = currentPerson > globalMeanPerson;
+                const carExceeded = currentCar > globalMeanCar;
+
+                if (personExceeded || carExceeded) {
+                    alertsEl.innerHTML = `
+                        <div class="alert-item">
+                            <strong>Alerte ${today} ${String(currentHour).padStart(2, '0')}h</strong> :
+                            Person=${currentPerson} (moy=${globalMeanPerson.toFixed(2)}),
+                            Car=${currentCar} (moy=${globalMeanCar.toFixed(2)}).
+                        </div>
+                    `;
+                } else {
+                    alertsEl.innerHTML = `
+                        <div class="alert-ok">
+                            Heure courante (${today} ${String(currentHour).padStart(2, '0')}h) sous les moyennes globales.
+                            Person: ${currentPerson}/${globalMeanPerson.toFixed(2)},
+                            Car: ${currentCar}/${globalMeanCar.toFixed(2)}.
+                        </div>
+                    `;
+                }
+            } else {
+                alertsEl.innerHTML = `
+                    <div class="alert-ok">
+                        Pas encore de données pour aujourd'hui (${today}) à l'heure actuelle.
+                    </div>
+                `;
+            }
+
+            orderedDaysForHourly.forEach(day => {
+                const personSeries = byDayHour[day].map(x => x.person);
+                const carSeries = byDayHour[day].map(x => x.car);
+
+                const card = document.createElement('div');
+                card.className = 'day-chart-card';
+
+                const title = document.createElement('p');
+                title.className = 'day-chart-title';
+                title.textContent = `${day} (agrégation par heure)`;
+
+                const wrap = document.createElement('div');
+                wrap.className = 'day-chart-wrap';
+
+                const canvas = document.createElement('canvas');
+                wrap.appendChild(canvas);
+
+                card.appendChild(title);
+                card.appendChild(wrap);
+                perDayChartsEl.appendChild(card);
+
+                new Chart(canvas.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: hourLabels,
+                        datasets: [
+                            {
+                                label: 'Person',
+                                data: personSeries,
+                                borderColor: '#6c63ff',
+                                backgroundColor: 'rgba(108,99,255,0.15)',
+                                tension: 0.3,
+                                pointRadius: 2,
+                                fill: true
+                            },
+                            {
+                                label: 'Car',
+                                data: carSeries,
+                                borderColor: '#e94560',
+                                backgroundColor: 'rgba(233,69,96,0.15)',
+                                tension: 0.3,
+                                pointRadius: 2,
+                                fill: true
+                            },
+                            {
+                                label: 'Moyenne globale Person/image',
+                                data: Array.from({ length: 24 }, () => globalMeanPerson),
+                                borderColor: '#9f97ff',
+                                borderDash: [6, 4],
+                                pointRadius: 0,
+                                fill: false
+                            },
+                            {
+                                label: 'Moyenne globale Car/image',
+                                data: Array.from({ length: 24 }, () => globalMeanCar),
+                                borderColor: '#ff7d9b',
+                                borderDash: [6, 4],
+                                pointRadius: 0,
+                                fill: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { labels: { color: '#aaa' } } },
+                        scales: {
+                            x: { ticks: { color: '#aaa', maxTicksLimit: 12 }, grid: { color: '#1f4a7a' } },
+                            y: { ticks: { color: '#aaa' }, grid: { color: '#1f4a7a' }, beginAtZero: true }
+                        }
+                    }
+                });
+            });
+        }
         // --- Classes (person + car uniquement) ---
         const ALLOWED = ['person', 'car'];
         const classes = Object.entries(data.class_stats).filter(([k]) => ALLOWED.includes(k));
