@@ -162,7 +162,8 @@ def process_image(file_path):
             date=data_payload['date'],
             time=data_payload['time'],
             datetime_str=data_payload['datetime'],
-            num_detections=data_payload['num_detections']
+            num_detections=data_payload['num_detections'],
+            source=data_payload['source_label']
         )
         if is_inserted:
             class_list = []
@@ -269,6 +270,20 @@ def get_db_stats_endpoint():
     class_stats = db_class.get_class_statistics()
     class_trend = db_class.get_class_trend_per_day()
     per_frame = db_class.get_per_frame_counts()
+
+    # Enrichir per_frame avec lieu/date/heure depuis detection_main
+    main_rows = db_main.get_all_detections()
+    by_image = {row.get('image_url'): row for row in main_rows}
+    for row in per_frame:
+        m = by_image.get(row.get('image_url'))
+        if m:
+            row['source'] = m.get('source', 'unknown')
+            row['date'] = m.get('date')
+            row['time'] = m.get('time')
+            row['datetime'] = m.get('datetime')
+        else:
+            row['source'] = 'unknown'
+
     return jsonify({
         'summary': summary,
         'per_day': per_day,

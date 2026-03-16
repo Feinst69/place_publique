@@ -189,12 +189,14 @@ fetch('/api/db_stats')
         });
 
         // Seuil fixe de détections par image
-        const DETECTION_THRESHOLD = 8;
+        const DETECTION_THRESHOLD = 10;
 
         // Alertes: images dont le total dépasse le seuil fixe
         const exceededFrames = frames
             .map(f => ({
                 image: f.image_url || 'image_inconnue',
+                source: f.source || 'Lieu inconnu',
+                datetime: f.datetime || '',
                 created_at: String(f.created_at || ''),
                 total: Number(f.person_count || 0) + Number(f.car_count || 0),
                 person: Number(f.person_count || 0),
@@ -214,8 +216,9 @@ fetch('/api/db_stats')
         } else {
             const maxAlerts = 3;
             const rows = exceededFrames.slice(0, maxAlerts).map(x => {
-                const ts = x.created_at ? x.created_at.slice(0, 16) : 'date inconnue';
-                return `<div>• ${ts} | total=${x.total} (person=${x.person}, car=${x.car})</div>`;
+                const ts = x.datetime ? String(x.datetime).slice(0, 16) : (x.created_at ? x.created_at.slice(0, 16) : 'date inconnue');
+                const place = x.source || 'Lieu inconnu';
+                return `<div>• ${place} | ${ts} | total=${x.total} (person=${x.person}, car=${x.car})</div>`;
             }).join('');
 
             alertsEl.innerHTML = `

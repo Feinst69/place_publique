@@ -48,6 +48,7 @@ class DetectionMainDatabase:
                 time TEXT NOT NULL,
                 datetime TEXT NOT NULL,
                 num_detections INTEGER NOT NULL,
+                source TEXT DEFAULT 'unknown',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -55,11 +56,17 @@ class DetectionMainDatabase:
         # Index pour améliorer les performances
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_main_image_url ON detection_main(image_url)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_main_datetime ON detection_main(datetime)")
+
+        # Migration légère: ajouter la colonne source si DB existante sans ce champ
+        cursor.execute("PRAGMA table_info(detection_main)")
+        existing_cols = {row[1] for row in cursor.fetchall()}
+        if "source" not in existing_cols:
+            cursor.execute("ALTER TABLE detection_main ADD COLUMN source TEXT DEFAULT 'unknown'")
         
         conn.commit()
         self.close(conn)
     
-    def insert_detection(self, image_url: str, date: str, time: str, datetime_str: str, num_detections: int) -> bool:
+    def insert_detection(self, image_url: str, date: str, time: str, datetime_str: str, num_detections: int, source: str = "unknown") -> bool:
         """
         Insère une nouvelle détection dans la base de données.
         
@@ -69,6 +76,7 @@ class DetectionMainDatabase:
             time: Heure au format HH:MM:SS
             datetime_str: Date et heure combinées au format YYYY-MM-DD HH:MM:SS
             num_detections: Nombre total de détections
+            source: Nom du lieu/caméra (ex: Cardiff)
         
         Returns:
             True si l'insertion a réussi, False sinon
@@ -89,9 +97,9 @@ class DetectionMainDatabase:
             
             # Insertion dans la table detection_main avec juste le nom du fichier
             cursor.execute("""
-                INSERT INTO detection_main (image_url, date, time, datetime, num_detections)
-                VALUES (?, ?, ?, ?, ?)
-            """, (image_filename, date, time, datetime_str, num_detections))
+                INSERT INTO detection_main (image_url, date, time, datetime, num_detections, source)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (image_filename, date, time, datetime_str, num_detections, source))
 
             conn.commit()
             return True
