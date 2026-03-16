@@ -194,7 +194,7 @@ fetch('/api/db_stats')
         const globalMeanPerson = totalFrames ? (totalPersonAllFrames / totalFrames) : 0;
         const globalMeanCar = totalFrames ? (totalCarAllFrames / totalFrames) : 0;
 
-        const orderedDaysForHourly = Object.keys(byDayHour).sort();
+        const orderedDaysForHourly = Object.keys(byDayHour).sort((a, b) => b.localeCompare(a));
         const hourLabels = Array.from({ length: 24 }, (_, h) => `${String(h).padStart(2, '0')}h`);
 
         if (orderedDaysForHourly.length === 0) {
