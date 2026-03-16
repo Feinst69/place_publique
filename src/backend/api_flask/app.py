@@ -20,10 +20,11 @@ from database.db_detection_class import DetectionClassDatabase
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 SRC_DIR = os.path.join(BASE_DIR, 'src')
 FRONTEND_DIR = os.path.join(SRC_DIR, 'frontend')
-MODEL_PERSON_PATH = os.path.join(BASE_DIR, "data/final/weights_model/best_people.pt")
-MODEL_CAR_PATH    = os.path.join(BASE_DIR, "data/final/weights_model/best_car.pt")
+MODEL_PERSON_PATH = os.environ.get("MODEL_PERSON_PATH", os.path.join(BASE_DIR, "data/final/weights_model/yolo11l.pt"))
+MODEL_CAR_PATH    = os.environ.get("MODEL_CAR_PATH", os.path.join(BASE_DIR, "data/final/weights_model/yolo11l.pt"))
 IMAGE_OUT_DIR = os.path.join(BASE_DIR, "data/final/image_annoted")
 JSON_OUT_DIR = os.path.join(BASE_DIR, "data/final/yolo_json")
+CONF_THRESHOLD = float(os.environ.get("YOLO_CONF_THRESHOLD", "0.15"))
 
 # Surveillance des 5 webcams : Cardiff, Madrid, Rome (Trevi), Murcia, La Palma
 WATCH_DIRS = [
@@ -69,8 +70,11 @@ CAR_CLASSES = resolve_class_ids(model_car, ["car", "cars", "vehicle", "truck", "
 PERSON_CLASSES = PERSON_CLASSES if PERSON_CLASSES else None
 CAR_CLASSES = CAR_CLASSES if CAR_CLASSES else None
 
+print(f"Model person: {MODEL_PERSON_PATH}")
+print(f"Model car: {MODEL_CAR_PATH}")
 print(f"Classes person utilisées: {PERSON_CLASSES} | names={model_person.names}")
 print(f"Classes car utilisées: {CAR_CLASSES} | names={model_car.names}")
+print(f"Confidence threshold: {CONF_THRESHOLD}")
 
 # Mapping dossier -> label affichable
 CAMERA_LABELS = {
@@ -99,7 +103,7 @@ def process_image(file_path):
         # --- Modele person ---
         res_person = model_person.predict(
             source=file_path, classes=PERSON_CLASSES,
-            conf=0.25, save=False, verbose=False
+            conf=CONF_THRESHOLD, save=False, verbose=False
         )[0]
         if res_person.boxes is not None:
             for box in res_person.boxes:
@@ -114,7 +118,7 @@ def process_image(file_path):
         # --- Modele car (truck/bus remappes en "car") ---
         res_car = model_car.predict(
             source=file_path, classes=CAR_CLASSES,
-            conf=0.25, save=False, verbose=False
+            conf=CONF_THRESHOLD, save=False, verbose=False
         )[0]
         if res_car.boxes is not None:
             for box in res_car.boxes:

@@ -31,8 +31,8 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 API_SCRIPT = BASE_DIR / "src" / "backend" / "api_flask" / "app.py"
 SCRAPER_ROTATION_SCRIPT = BASE_DIR / "src" / "backend" / "scrapping" / "scrapping_rotation.py"
 
-MODEL_PERSON = BASE_DIR / "data" / "final" / "weights_model" / "yolo11n.pt"
-MODEL_CAR = BASE_DIR / "data" / "final" / "weights_model" / "best_car.pt"
+MODEL_PERSON = BASE_DIR / "data" / "final" / "weights_model" / "yolo11l.pt"
+MODEL_CAR = BASE_DIR / "data" / "final" / "weights_model" / "yolo11l.pt"
 
 
 def choose_python_executable() -> Path:
