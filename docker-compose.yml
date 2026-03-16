@@ -8,8 +8,8 @@ services:
       - PORT=5000
       - CHROME_BIN=/usr/bin/chromium
       - CHROMEDRIVER_PATH=/usr/bin/chromedriver
-      - MODEL_PERSON_PATH=/app/data/final/weights_model/yolo11l.pt
-      - MODEL_CAR_PATH=/app/data/final/weights_model/yolo11l.pt
+      - MODEL_PERSON_PATH=/app/data/final/weights_model/yolo11x.pt
+      - MODEL_CAR_PATH=/app/data/final/weights_model/yolo11x.pt
       - YOLO_CONF_THRESHOLD=0.15
     ports:
       - "${HOST_PORT:-5000}:5000"
